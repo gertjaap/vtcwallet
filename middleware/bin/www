@@ -26,6 +26,7 @@ var server = http.createServer(app);
  */
 
 server.listen(port);
+server.port = port;
 module.exports = server;
 
 /**

@@ -1,4 +1,5 @@
 const electron = require('electron')
+const request = require('request')
 // Module to control application life.
 const app = electron.app
 // Module to create native browser window.
@@ -11,6 +12,20 @@ const url = require('url')
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
+function callbackWhenInitialized(server, callback) {
+  request.get('http://localhost:' + server.port + '/status', function(error, response, body) {
+    console.log(body);
+    var result = JSON.parse(body);
+    if(result.initializationStatus == 100) {
+      callback();
+    } else {
+      setTimeout(function() {
+        callbackWhenInitialized(server, callback);
+      }, 500);
+    }
+  });
+}
+
 function createWindow () {
 
   // Create the browser window.
@@ -18,7 +33,7 @@ function createWindow () {
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'index.html'),
+    pathname: path.join(__dirname, 'walletui' , 'index.html'),
     protocol: 'file:',
     slashes: true
   }))
@@ -58,10 +73,14 @@ app.on('ready', function() {
   var server = require('../middleware/bin/www');
   server.on('error', onError);
   server.on('listening', function() {
-    splash.close();
-    createWindow();
+    callbackWhenInitialized(server, function() {
+      splash.close();
+      createWindow();
+    });
   });
 })
+
+
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
