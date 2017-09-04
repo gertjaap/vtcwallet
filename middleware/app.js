@@ -5,8 +5,14 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var vertcoind = require('./vertcoind');
+
 var index = require('./routes/index');
+index.vertcoind = vertcoind;
+
 var status = require('./routes/status');
+status.vertcoind = vertcoind;
+
 
 var app = express();
 

@@ -6,8 +6,33 @@ var initInterval = setInterval(function() { initializationStatus += 5; if(initia
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.json({
-    initializationStatus: initializationStatus
+  var status = {};
+  status.vertcoindStatus = router.vertcoind.status;
+  status.vertcoindProgress = router.vertcoind.progress;
+
+  if(status.vertcoindProgress < 100)
+  {
+    status.initStatus = status.vertcoindStatus;
+    status.initProgress = status.vertcoindProgress;
+  }
+  else {
+    status.initStatus = "Ready";
+    status.initProgress = 100;
+  }
+
+  res.json(status);
+});
+
+router.get('/blockHeight', function(req, res, next) {
+  router.vertcoind.request('getblockcount', [], function(err, result, body) {
+    if(err) {
+      res.sendStatus(500);
+      return;
+    }
+
+    res.json({
+      blockHeight: body.result
+    });
   });
 });
 

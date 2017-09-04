@@ -1,8 +1,7 @@
 #!/bin/bash
 cd frontend
-npm run build:dev
+ng build
 rm -rf ../electron/walletui
-cp -R dist ../electron/dist
-mv ../electron/dist ../electron/walletui
+cp -R dist ../electron/walletui
 cd ../electron
 npm start

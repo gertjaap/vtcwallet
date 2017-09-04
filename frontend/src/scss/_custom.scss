@@ -1,0 +1,15 @@
+// Here you can add other styles
+div.balance {
+  font-size: 10pt;
+  line-height: 20pt;
+  span.balanceFull {
+    font-size: 14pt;
+    font-weight: bold;
+    line-height: 20pt;
+  }
+  span.balanceFractions {
+    font-size: 8pt;
+    line-height: 20pt;
+  }
+  margin-right: 20px;
+}

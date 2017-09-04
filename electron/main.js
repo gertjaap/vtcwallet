@@ -12,15 +12,16 @@ const url = require('url')
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
-function callbackWhenInitialized(server, callback) {
+function waitForInitialize(server, splash, callback) {
   request.get('http://localhost:' + server.port + '/status', function(error, response, body) {
-    console.log(body);
     var result = JSON.parse(body);
-    if(result.initializationStatus == 100) {
+    if(result.initProgress == 100) {
+      splash.close();
       callback();
     } else {
+      splash.webContents.send('status-data', result);
       setTimeout(function() {
-        callbackWhenInitialized(server, callback);
+        waitForInitialize(server, splash, callback);
       }, 500);
     }
   });
@@ -29,7 +30,7 @@ function callbackWhenInitialized(server, callback) {
 function createWindow () {
 
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600})
+  mainWindow = new BrowserWindow({width: 1000, height: 600})
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -73,8 +74,7 @@ app.on('ready', function() {
   var server = require('../middleware/bin/www');
   server.on('error', onError);
   server.on('listening', function() {
-    callbackWhenInitialized(server, function() {
-      splash.close();
+    waitForInitialize(server, splash, function() {
       createWindow();
     });
   });
