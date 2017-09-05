@@ -12,22 +12,11 @@ const url = require('url')
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
-function waitForInitialize(server, splash, callback) {
-  request.get('http://localhost:' + server.port + '/status', function(error, response, body) {
-    var result = JSON.parse(body);
-    if(result.initProgress == 100) {
-      splash.close();
-      callback();
-    } else {
-      splash.webContents.send('status-data', result);
-      setTimeout(function() {
-        waitForInitialize(server, splash, callback);
-      }, 500);
-    }
-  });
-}
+
 
 function createWindow () {
+
+  console.log("Opening main window...");
 
   // Create the browser window.
   mainWindow = new BrowserWindow({width: 1000, height: 600})
@@ -44,11 +33,35 @@ function createWindow () {
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
+    console.log("Main window closed");
+
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null
   })
+}
+
+function waitForInitialize(server, splash, callback) {
+
+  request.get('http://localhost:' + server.port + '/status', function(error, response, body) {
+    var result = null;
+    try {
+      result = JSON.parse(body);
+    } catch (e) {
+
+    }
+    if(result.initProgress === 100) {
+      callback();
+      splash.close();
+    } else {
+      if(result)
+        splash.webContents.send('status-data', result);
+      setTimeout(function() {
+        waitForInitialize(server, splash, callback);
+      }, 500);
+    }
+  });
 }
 
 // This method will be called when Electron has finished
