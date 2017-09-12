@@ -55,7 +55,6 @@ vertcoind.request = function(method, params, callback) {
     user : vertcoind.rpcUser,
     pass : vertcoind.rpcPassword
   }, 'body' : JSON.stringify(requestBody)}, function(err, result, body) {
-    console.log("Body:[" + body + "]");
     try {
       body = JSON.parse(body);
     } catch (e) {
@@ -69,7 +68,6 @@ vertcoind.request = function(method, params, callback) {
 var checkJsonRPCAvailable = function(callback) {
   vertcoind.request('getblockcount', [], function(err, result, body) {
     if(!err && result.statusCode === 200) {
-      console.log("Request:", result.statusCode, body);
       callback();
     } else {
       setTimeout(function() { checkJsonRPCAvailable(callback); }, 500);
@@ -79,8 +77,8 @@ var checkJsonRPCAvailable = function(callback) {
 };
 
 var startNode = function(callback) {
-  var process = path.join(__dirname, 'vertcoind' , processName);
-  var arguments = ['--datadir=' + path.join(__dirname, 'vertcoind', 'data')];
+  var process = path.join(__dirname, '..', 'vertcoind' , processName);
+  var arguments = ['--txindex','--datadir=' + path.join(__dirname, '..', 'vertcoind', 'data')];
   vertcoind.nodeProcess = spawn(process, arguments);
   vertcoind.nodeProcess.stdout.on('data', (data) => {
     console.log(`vertcoind [out]: ${data}`);
@@ -97,7 +95,7 @@ var startNode = function(callback) {
 }
 
 var ensureVertcoindFolder = function(callback) {
-  var vertcoindDir = path.join(__dirname, 'vertcoind');
+  var vertcoindDir = path.join(__dirname, '..', 'vertcoind');
   if(!fs.existsSync(vertcoindDir))
   {
     fs.mkdir(vertcoindDir, function(err) {
@@ -110,7 +108,7 @@ var ensureVertcoindFolder = function(callback) {
 }
 
 var ensureDataFolder = function(callback) {
-  var dataDir = path.join(__dirname, 'vertcoind', 'data');
+  var dataDir = path.join(__dirname, '..', 'vertcoind', 'data');
   if(!fs.existsSync(dataDir))
   {
     fs.mkdir(dataDir, function(err) {
@@ -123,7 +121,7 @@ var ensureDataFolder = function(callback) {
 }
 
 var checkDownloaded = function(callback) {
-  if(!fs.existsSync(path.join(__dirname, 'vertcoind' , processName)))
+  if(!fs.existsSync(path.join(__dirname, '..', 'vertcoind' , processName)))
   {
     const platform = process.platform.replace('darwin', 'mac').replace('win32', 'win').replace('freebsd', 'linux').replace('sunos', 'linux');
     const architecture = process.arch;
@@ -142,7 +140,7 @@ var checkDownloaded = function(callback) {
 
 var checkRpcConfig = function(callback) {
   var config = {};
-  var dataDir = path.join(__dirname, 'vertcoind', 'data');
+  var dataDir = path.join(__dirname, '..', 'vertcoind', 'data');
   var vertcoindConfigFile = path.join(dataDir, 'vertcoin.conf');
   if(fs.existsSync(vertcoindConfigFile)) {
     config = ini.parse(fs.readFileSync(vertcoindConfigFile, 'utf-8'))

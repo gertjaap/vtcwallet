@@ -5,7 +5,10 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var vertcoind = require('./vertcoind');
+var vertcoind = require('./services/vertcoind');
+
+var blockchainIndexing = require('./services/blockchainindexing');
+blockchainIndexing.vertcoind = vertcoind;
 
 var index = require('./routes/index');
 index.vertcoind = vertcoind;
@@ -13,6 +16,9 @@ index.vertcoind = vertcoind;
 var status = require('./routes/status');
 status.vertcoind = vertcoind;
 
+var blockExplorer = require('./routes/blockexplorer');
+blockExplorer.blockchainIndexing = blockchainIndexing;
+blockExplorer.vertcoind = vertcoind;
 
 var app = express();
 
@@ -25,6 +31,7 @@ app.use(cookieParser());
 
 app.use('/', index);
 app.use('/status', status);
+app.use('/blockExplorer', blockExplorer);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

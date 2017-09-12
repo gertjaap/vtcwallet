@@ -17,9 +17,12 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "~1.6.2"
+    "electron": "~1.6.2",
+    "electron-rebuild": "^1.6.0"
   },
   "dependencies": {
+    "leveldown": "^1.7.2",
+    "node-lmdb": "^0.4.13",
     "request": "^2.81.0"
   }
 }
