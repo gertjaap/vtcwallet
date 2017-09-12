@@ -25,7 +25,7 @@ var setup = function(callback) {
   blockchainIndexing.env = new lmdb.Env();
   blockchainIndexing.env.open({
       path: indexDir,
-      mapSize: 2*1024*1024*1024, // maximum database size
+      mapSize: 20*1024*1024*1024, // maximum database size
       maxDbs: 3
   });
   blockchainIndexing.db = blockchainIndexing.env.openDbi({
@@ -36,9 +36,9 @@ var setup = function(callback) {
 }
 
 var processTx = function(hash, callback) {
-  console.log("Processing transaction ", hash);
-  blockchainIndexing.vertcoind.request('getrawtransaction', [hash], function(err, result, body) {
-    blockchainIndexing.vertcoind.request('decoderawtransaction', [body.result], function(err, result, body) {
+  //console.log("Processing TX: ", hash);
+  blockchainIndexing.vertcoind.request('getrawtransaction', [hash, true], function(err, result, body) {
+    //blockchainIndexing.vertcoind.request('decoderawtransaction', [body.result], function(err, result, body) {
       if(body.result) {
         for(var i = 0; i < body.result.vin.length; i++) {
           var txi = body.result.vin[i];
@@ -74,6 +74,9 @@ var processTx = function(hash, callback) {
 
                 }
                 break;
+              case 'nulldata':
+                // Ignore
+                break;
               default:
                 console.log("Unrecognized scriptPubKey type", body.result.vout[i]);
             }
@@ -82,13 +85,14 @@ var processTx = function(hash, callback) {
         }
       }
       callback();
-    });
+    //});
   });
 }
 
 
 var processBlock = function(index, callback) {
-  console.log("Processing block ", index);
+  if(index % 1000 === 0)
+    console.log("Processing block", index);
   blockchainIndexing.vertcoind.request('getblockhash', [index], function(err, result, body) {
     blockchainIndexing.vertcoind.request('getblock', [body.result], function(err, result, body) {
       var txQueue = async.queue(processTx, 1);

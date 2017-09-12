@@ -15,6 +15,7 @@ index.vertcoind = vertcoind;
 
 var status = require('./routes/status');
 status.vertcoind = vertcoind;
+status.blockchainIndexing = blockchainIndexing;
 
 var blockExplorer = require('./routes/blockexplorer');
 blockExplorer.blockchainIndexing = blockchainIndexing;
