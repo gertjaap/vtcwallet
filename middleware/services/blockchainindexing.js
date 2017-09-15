@@ -5,7 +5,7 @@ const uuidv4 = require('uuid/v4');
 const async = require('async');
 const level = require('level');
 
-
+var blockCache = {};
 var blockchainIndexing = {};
 var last100 = new Date();
 var last100txos = 0;
@@ -28,24 +28,51 @@ var ensureIndexFolder = function(callback) {
 var setup = function(callback) {
   var indexDir = path.join(__dirname, '..', 'blockchainIndex');
 
-  blockchainIndexing.addrDb = level(path.join(indexDir,'addressTxo'));
-  blockchainIndexing.txoDb = level(path.join(indexDir,'txo'));
-  blockchainIndexing.settingsDb = level(path.join(indexDir,'settings'));
+  blockchainIndexing.db = level(path.join(indexDir,'blockChainIndex'));
 
   callback();
 }
 
+var readKey = function(key, callback) {
+  if(blockCache[key]) callback(blockCache[key]);
+  else {
+    blockchainIndexing.db.get(key, function (err, value) {
+      if(err) callback(undefined);
+      else callback(value);
+    });
+  }
+}
+
+var putKey = function(key, value) {
+  blockCache[key] = value;
+}
+
+var commitKeys = function(callback) {
+  var batch = [];
+  for (var key in blockCache) {
+    if (blockCache.hasOwnProperty(key)) {
+      batch.push({type:'put',key:key,value:blockCache[key]});
+    }
+  }
+  blockchainIndexing.db.batch(batch, {"sync": true}, function(err) {
+    callback();
+  });
+
+  blockCache = {};
+}
+
 var processTx = function(payload, callback) {
-  var timer = blockchainIndexing.winston.startTimer();
+  //var timer = blockchainIndexing.winston.startTimer();
 
   var hash = payload.tx;
   var txn = payload.txn;
+  var block = payload.block;
   last100txes++;
 
   blockchainIndexing.vertcoind.request('getrawtransaction', [hash, true], function(err, result, body) {
-    timer.done("Got raw TX ");
+    //timer.done("Got raw TX ");
 
-    if(!err && body.result) {
+    if(body.result) {
 
       var processVin = function(txi, innerCallback) {
         var started = new Date();
@@ -57,18 +84,17 @@ var processTx = function(payload, callback) {
 
         last100txis++;
 
+
         // Mark the output as spent
-        blockchainIndexing.txoDb.get("txo-" + txi.txid + "-" + txi.vout, function (err, value) {
+        readKey("txo-" + txi.txid + "-" + txi.vout, function (value) {
           var txo = {};
           if(value) {
             txo = JSON.parse(value);
           }
           txo.spent = true;
           txo.spentTxID = hash;
-
-          blockchainIndexing.txoDb.put("txo-" + txi.txid + "-" + txi.vout, JSON.stringify(txo), function(err) {
-            innerCallback();
-          });
+          putKey("txo-" + txi.txid + "-" + txi.vout, JSON.stringify(txo));
+          innerCallback();
         });
       };
 
@@ -84,31 +110,28 @@ var processTx = function(payload, callback) {
               last100txos++;
               var processAddress = function(addr, innerInnerCallback) {
 
-                blockchainIndexing.addrDb.get(addr + "-txos", function(err, value) {
+                readKey(addr + "-txos", function(err, value) {
 
                   var txos = [];
                   if(value) txos = JSON.parse(value);
                   txos.push({txid : hash, vout : txo.index});
 
-                  blockchainIndexing.addrDb.put(addr + "-txos", JSON.stringify(txos), function(err) {
-                    if(err) console.log("Error updating address TXOs:", err);
-                    innerInnerCallback();
-                  });
+                  putKey(addr + "-txos", JSON.stringify(txos));
+                  innerInnerCallback();
                 });
 
               };
-              var processAddressQueue = async.queue(processAddress, 1);
+              var processAddressQueue = async.queue(processAddress, 10);
               processAddressQueue.drain = function() {
-                blockchainIndexing.txoDb.get("txo-" + hash + "-" + txo.index, function (err, value) {
+                readKey("txo-" + hash + "-" + txo.index, function (value) {
                   var updatedTxo = {};
                   if(value) {
                     updatedTxo = JSON.parse(value);
                   }
                   updatedTxo.v = txo.value;
 
-                  blockchainIndexing.txoDb.put("txo-" + hash + "-" + txo.index, JSON.stringify(updatedTxo), function(err) {
-                    innerCallback();
-                  });
+                  putKey("txo-" + hash + "-" + txo.index, JSON.stringify(updatedTxo));
+                  innerCallback();
                 });
               }
               if(txo.scriptPubKey.addresses.length == 0) processAddressQueue.drain();
@@ -130,20 +153,20 @@ var processTx = function(payload, callback) {
       }
 
       var processVinout = function(payload, callback) {
-        var innerTimer = blockchainIndexing.winston.startTimer();
+        //var innerTimer = blockchainIndexing.winston.startTimer();
         if(payload.txi) processVin(payload.txi, function() {
-          innerTimer.done("Processed vin " + payload.txi.index);
+          //innerTimer.done("Processed vin " + payload.txi.index);
           callback();
         });
         if(payload.txo) processVout(payload.txo, function() {
-          innerTimer.done("Processed vout " + payload.txo.index);
+          //innerTimer.done("Processed vout " + payload.txo.index);
           callback();
         });
       }
 
-      var vinoutQueue = async.queue(processVinout, 10);
+      var vinoutQueue = async.queue(processVinout, 1);
       vinoutQueue.drain = function() {
-        timer.done("Done processing vin/vout");
+        //timer.done("Done processing vin/vout");
 
         callback();
       }
@@ -163,55 +186,41 @@ var processTx = function(payload, callback) {
       }
 
       if(count == 0) vinoutQueue.drain();
-    } else {
-        console.log(err);
-        blockchainIndexing.timeout = setTimeout(processTx, 10, payload, callback);
-        return;  
     }
   });
 }
 
 
 var processBlock = function(index, callback) {
-  var timer = blockchainIndexing.winston.startTimer();
-
-  if(index % 10 == 0)
+  if(index % 100 == 0)
   {
     var timePer100 = new Date() - last100;
     last100 = new Date();
-    console.log("Processing block", index, "Time per 10:", timePer100, "TX:", last100txes, "TXO:", last100txos);
+    console.log("Processing block", index, "Time per 100:", timePer100, "TX:", last100txes, "TXO:", last100txos);
     last100txos = 0;
     last100txis = 0;
     last100txes = 0;
   }
   var started = new Date();
   blockchainIndexing.vertcoind.request('getblockhash', [index], function(err, result, body) {
-        timer.done("Get blockhash " + index);
-        if(!err && body.result) {
-            blockchainIndexing.vertcoind.request('getblock', [body.result], function(err, result, body) {
-              timer.done("Get block " + index);
-              if(!err && body.result) {
-                  var txQueue = async.queue(processTx, 1);
-                  txQueue.drain = function() {
-                    blockchainIndexing.settingsDb.put("lastBlock", index, function(err) {
-                      timer.done("Processed block " + index);
-                      callback();
-                    });
-                  };
-                  for(i = 0; i < body.result.tx.length; i++) {
-                    txQueue.push({ tx : body.result.tx[i] });
-                  }
-              } else {
-                console.log(err);
-                blockchainIndexing.timeout = setTimeout(processBlock, 10, index, callback);
-                return;  
-              }
-            });
+    //timer.done("Get blockhash " + index);
+    blockchainIndexing.vertcoind.request('getblock', [body.result], function(err, result, body) {
+      //timer.done("Get block " + index);
+
+      var txQueue = async.queue(processTx, 1);
+      txQueue.drain = function() {
+        putKey("lastBlock", index);
+        if(index % 1000 == 0) {
+          commitKeys(callback);
         } else {
-            console.log(err);
-            blockchainIndexing.timeout = setTimeout(processBlock, 10, index, callback);
-            return;  
+          callback();
         }
+      };
+      for(i = 0; i < body.result.tx.length; i++) {
+        txQueue.push({ tx : body.result.tx[i] });
+      }
+    });
+
   });
 
 
@@ -224,27 +233,15 @@ var processIndexes = function() {
     blockchainIndexing.timeout = setTimeout(processIndexes, 1000);
     return;
   }
-  
-  blockchainIndexing.vertcoind.request('getblockchaininfo', [], function(err, result, body) {
-    if(err) {
-        console.log("Error", err);
-        blockchainIndexing.timeout = setTimeout(processIndexes, 1000);
-        return;
-    }
-    
-    if(body.result.verificationprogress < 0.999) {
-        console.log("vertcoind not yet synced, waiting. Progress: " + body.result.verificationprogress);
-        blockchainIndexing.timeout = setTimeout(processIndexes, 1000 * 120);
-        return;
-    }
 
-  blockchainIndexing.settingsDb.get("lastBlock", function(err, value) {
+  readKey("lastBlock", function(value) {
     var startBlock = 0;
     if(value) startBlock = parseInt(value);
     console.log("Starting building additional indexes from block: ",startBlock);
     blockchainIndexing.vertcoind.request('getblockcount', [], function(err, result, body) {
       var blockQueue = async.queue(processBlock, 1);
       blockQueue.drain = function() {
+        commitKeys(callback);
         blockchainIndexing.timeout = setTimeout(processIndexes, 1000);
       };
       if(startBlock == body.result)
@@ -255,7 +252,6 @@ var processIndexes = function() {
         }
 
     });
-  });
   });
 };
 
