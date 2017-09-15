@@ -3,35 +3,31 @@ var router = express.Router();
 const async = require('async');
 /* GET users listing. */
 router.get('/address/:addr', function(req, res, next) {
-  var txn = router.blockchainIndexing.env.beginTxn({ readOnly: true });
-  var value = txn.getString(router.blockchainIndexing.db, req.params.addr + "-txos");
-  var txos = [];
-  if(value) txos = JSON.parse(value);
+  router.blockchainIndexing.addrDb.get(req.params.addr + "-txos", function(err, value) {
+    var txos = [];
+    if(value) txos = JSON.parse(value);
+    var expandedTxos = [];
 
-  console.log("Fetching TXOS:", txos);
-  var expandedTxos = [];
-
-  var expandTxo = function(txo, callback) {
-    var json = txn.getString(router.blockchainIndexing.db, "txo-" + txo.txid + "-" + txo.vout);
-    if(json) {
-      var txoObject = JSON.parse(json);
-      txoObject.txid = txo.txid;
-      txoObject.vout = txo.vout;
-      expandedTxos.push(txoObject);
+    var expandTxo = function(txo, callback) {
+      router.blockchainIndexing.txoDb.get("txo-" + txo.txid + "-" + txo.vout, function (err, json) {
+        if(json) {
+          var txoObject = JSON.parse(json);
+          txoObject.txid = txo.txid;
+          txoObject.vout = txo.vout;
+          expandedTxos.push(txoObject);
+        }
+        callback();
+      });
+    };
+    var queue = async.queue(expandTxo, 10);
+    queue.drain = function() {
+      res.json({txos:expandedTxos});
     }
-    callback();
-  };
-  var queue = async.queue(expandTxo, 10);
-  queue.drain = function() {
-    txn.commit();
-    res.json({txos:expandedTxos});
-  }
-  for(var i = 0; i < txos.length; i++) {
-    queue.push(txos[i]);
-  }
-  if(txos.length == 0) queue.drain();
-
-
+    for(var i = 0; i < txos.length; i++) {
+      queue.push(txos[i]);
+    }
+    if(txos.length == 0) queue.drain();
+  });
 });
 
 module.exports = router;

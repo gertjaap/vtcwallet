@@ -4,11 +4,15 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+var winston = require('winston');
 var vertcoind = require('./services/vertcoind');
+
+winston.level = 'debug';
+winston.add(winston.transports.File, { filename: 'middleware.log' });
 
 var blockchainIndexing = require('./services/blockchainindexing');
 blockchainIndexing.vertcoind = vertcoind;
+blockchainIndexing.winston = winston;
 
 var index = require('./routes/index');
 index.vertcoind = vertcoind;

@@ -37,13 +37,12 @@ router.get('/blockHeight', function(req, res, next) {
 });
 
 router.get('/indexHeight', function(req, res, next) {
-  var txn = router.blockchainIndexing.env.beginTxn();
-  var value = txn.getString(router.blockchainIndexing.db, "lastBlock");
-  var indexHeight = -1;
-  if(value) indexHeight = parseInt(value);
-  txn.commit();
-  res.json({
-    indexHeight: indexHeight
+  router.blockchainIndexing.settingsDb.get("lastBlock", function(err, value) {
+    var indexHeight = -1;
+    if(value) indexHeight = parseInt(value);
+    res.json({
+      indexHeight: indexHeight
+    });
   });
 });
 module.exports = router;
