@@ -18,6 +18,8 @@
     "levelup": "^1.3.9",
     "morgan": "~1.8.1",
     "node-lmdb": "^0.4.13",
+    "leveldown": "latest",
+    "levelup": "latest",
     "request": "^2.81.0",
     "serve-favicon": "~2.4.2",
     "uuid": "^3.1.0"

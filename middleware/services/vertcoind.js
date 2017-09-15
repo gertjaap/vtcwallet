@@ -54,11 +54,11 @@ vertcoind.request = function(method, params, callback) {
   request.post('http://localhost:5888/',{ 'auth' : {
     user : vertcoind.rpcUser,
     pass : vertcoind.rpcPassword
-  }, 'body' : JSON.stringify(requestBody)}, function(err, result, body) {
+  }, 'body' : JSON.stringify(requestBody), 'timeout': 3000}, function(err, result, body) {
     try {
       body = JSON.parse(body);
     } catch (e) {
-      console.log("Error parsing JSON",e);
+      console.log("Error parsing JSON", e, body);
     }
     callback(err, result, body);
   });
@@ -78,7 +78,7 @@ var checkJsonRPCAvailable = function(callback) {
 
 var startNode = function(callback) {
   var process = path.join(__dirname, '..', 'vertcoind' , processName);
-  var arguments = ['--txindex','--datadir=' + path.join(__dirname, '..', 'vertcoind', 'data'), '-disablewallet'];
+  var arguments = ['-txindex','--datadir=' + path.join(__dirname, '..', 'vertcoind', 'data'), '-disablewallet'];
   vertcoind.nodeProcess = spawn(process, arguments);
   vertcoind.nodeProcess.stdout.on('data', (data) => {
     console.log(`vertcoind [out]: ${data}`);

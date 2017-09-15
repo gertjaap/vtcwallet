@@ -1,4 +1,4 @@
-npm install -g @angular/cli
+sudo npm install -g @angular/cli
 cd electron
 npm install
 cd ../middleware
