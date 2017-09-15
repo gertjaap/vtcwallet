@@ -36,11 +36,15 @@ var setup = function(callback) {
 }
 
 var processTx = function(payload, callback) {
+  var timer = blockchainIndexing.winston.startTimer();
+
   var hash = payload.tx;
   var txn = payload.txn;
   last100txes++;
 
   blockchainIndexing.vertcoind.request('getrawtransaction', [hash, true], function(err, result, body) {
+    timer.done("Got raw TX ");
+
     if(body.result) {
 
       var processVin = function(txi, innerCallback) {
@@ -126,21 +130,27 @@ var processTx = function(payload, callback) {
       }
 
       var processVinout = function(payload, callback) {
+        var innerTimer = blockchainIndexing.winston.startTimer();
         if(payload.txi) processVin(payload.txi, function() {
+          innerTimer.done("Processed vin " + payload.txi.index);
           callback();
         });
         if(payload.txo) processVout(payload.txo, function() {
+          innerTimer.done("Processed vout " + payload.txo.index);
           callback();
         });
       }
 
       var vinoutQueue = async.queue(processVinout, 10);
       vinoutQueue.drain = function() {
+        timer.done("Done processing vin/vout");
+
         callback();
       }
       var count = 0;
       for(var i = 0; i < body.result.vin.length; i++) {
         var txi = body.result.vin[i];
+        txi.index = i;
         vinoutQueue.push({ txi : txi });
         count++;
       }
@@ -175,7 +185,7 @@ var processBlock = function(index, callback) {
     timer.done("Get blockhash " + index);
     blockchainIndexing.vertcoind.request('getblock', [body.result], function(err, result, body) {
       timer.done("Get block " + index);
-      var txQueue = async.queue(processTx, 100);
+      var txQueue = async.queue(processTx, 1);
       txQueue.drain = function() {
         blockchainIndexing.settingsDb.put("lastBlock", index, function(err) {
           timer.done("Processed block " + index);
