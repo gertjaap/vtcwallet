@@ -3,10 +3,14 @@ const path = require('path');
 const ini = require('ini');
 const uuidv4 = require('uuid/v4');
 const async = require('async');
-//const lmdb = require('node-lmdb');
-const levelup = require('levelup');
+const level = require('level');
+
 
 var blockchainIndexing = {};
+var last100 = new Date();
+var last100txos = 0;
+var last100txis = 0;
+var last100txes = 0;
 
 var ensureIndexFolder = function(callback) {
   var indexDir = path.join(__dirname, '..', 'blockchainIndex');
@@ -23,135 +27,191 @@ var ensureIndexFolder = function(callback) {
 
 var setup = function(callback) {
   var indexDir = path.join(__dirname, '..', 'blockchainIndex');
-  blockchainIndexing.db = levelup(indexDir);
-  /*blockchainIndexing.env = new lmdb.Env();
-  blockchainIndexing.env.open({
-      path: indexDir,
-      mapSize: 20*1024*1024*1024, // maximum database size
-      maxDbs: 3
-  });
-  blockchainIndexing.db = blockchainIndexing.env.openDbi({
-      name: "blockchainIndexDb",
-      create: true // will create if database did not exist
-  });*/
+
+  blockchainIndexing.addrDb = level(path.join(indexDir,'addressTxo'));
+  blockchainIndexing.txoDb = level(path.join(indexDir,'txo'));
+  blockchainIndexing.settingsDb = level(path.join(indexDir,'settings'));
+
   callback();
 }
 
-var processTx = function(hash, callback) {
-  //console.log("Processing TX: ", hash);
+var processTx = function(payload, callback) {
+  var timer = blockchainIndexing.winston.startTimer();
+
+  var hash = payload.tx;
+  var txn = payload.txn;
+  last100txes++;
+
   blockchainIndexing.vertcoind.request('getrawtransaction', [hash, true], function(err, result, body) {
-    //blockchainIndexing.vertcoind.request('decoderawtransaction', [body.result], function(err, result, body) {
-      if(!err && body.result) {
-        for(var i = 0; i < body.result.vin.length; i++) {
-          var txi = body.result.vin[i];
-          if(txi.txid) {
-            // Mark the output as spent
-            //var txn = blockchainIndexing.env.beginTxn();
-            //var value = txn.getString(blockchainIndexing.db, "txo-" + txi.txid + "-" + txi.vout);
-            blockchainIndexing.db.get("txo-" + txi.txid + "-" + txi.vout, function(error, value) {
-                if(error) { 
-                    console.log("Error: VIN using a non-existing TXO", txi.txid);
-                    blockchainIndexing.timeout = setTimeout(processTx, 10, hash, callback);
-                    return;
-                } else {
-                
-                    txo = JSON.parse(value);
-                    txo.spent = true;
-                    txo.spentTxID = hash;
-                    blockchainIndexing.db.put("txo-" + txi.txid + "-" + txi.vout, JSON.stringify(txo), {"sync": true});
-                }        
-            });
-            /*if(!value) { console.log("Error: VIN using a non-existing TXO"); }
-            txo = JSON.parse(value);
-            txo.spent = true;
-            txo.spentTxID = hash;
-            txn.putString(blockchainIndexing.db, "txo-" + txi.txid + "-" + txi.vout, JSON.stringify(txo));
-            txn.commit();*/
-            
-          }
+    timer.done("Got raw TX ");
+
+    if(!err && body.result) {
+
+      var processVin = function(txi, innerCallback) {
+        var started = new Date();
+
+        if(!txi.txid) {
+          innerCallback();
+          return;
         }
-        for(var i = 0; i < body.result.vout.length; i++) {
-            var curTxo = i;
-          if(!body.result.vout[i].scriptPubKey) {
-            console.log("No scriptPubKey!", body.result.vout[i]);
-          } else {
-            switch(body.result.vout[i].scriptPubKey.type) {
-              case 'pubkey':
-              case 'pubkeyhash':
-                for(var j = 0; j < body.result.vout[i].scriptPubKey.addresses.length; j++) {               
-                  var addr = body.result.vout[i].scriptPubKey.addresses[j];
-                  //var txn = blockchainIndexing.env.beginTxn();
-                  blockchainIndexing.db.get(addr + "-txos", function(error, value) {
-                      var txos = [];
-                      if(!error && value) {
-                          txos = JSON.parse(value);
-                      }
-                      
-                      txos.push({txid : hash, vout : curTxo});
-                      blockchainIndexing.db.batch([{type: 'put', key: addr + "-txos", value: JSON.stringify(txos)},
-                      {type: 'put', key: "txo-" + hash + "-" + i, value: JSON.stringify({value:body.result.vout[curTxo].value})}], {"sync": true});
-                  });
-                  /*var value = txn.getString(blockchainIndexing.db, addr + "-txos");
+
+        last100txis++;
+
+        // Mark the output as spent
+        blockchainIndexing.txoDb.get("txo-" + txi.txid + "-" + txi.vout, function (err, value) {
+          var txo = {};
+          if(value) {
+            txo = JSON.parse(value);
+          }
+          txo.spent = true;
+          txo.spentTxID = hash;
+
+          blockchainIndexing.txoDb.put("txo-" + txi.txid + "-" + txi.vout, JSON.stringify(txo), function(err) {
+            innerCallback();
+          });
+        });
+      };
+
+      var processVout = function(txo, innerCallback) {
+        if(!txo.scriptPubKey) {
+          console.log("No scriptPubKey!", txo);
+          innerCallback();
+          return;
+        } else {
+          switch(txo.scriptPubKey.type) {
+            case 'pubkey':
+            case 'pubkeyhash':
+              last100txos++;
+              var processAddress = function(addr, innerInnerCallback) {
+
+                blockchainIndexing.addrDb.get(addr + "-txos", function(err, value) {
+
                   var txos = [];
                   if(value) txos = JSON.parse(value);
-                  txos.push({txid : hash, vout : i});
-                  txn.putString(blockchainIndexing.db, addr + "-txos", JSON.stringify(txos));
-                  txn.putString(blockchainIndexing.db, "txo-" + hash + "-" + i, JSON.stringify({value:body.result.vout[i].value}))
-                  txn.commit();*/
+                  txos.push({txid : hash, vout : txo.index});
 
-                }
-                break;
-              case 'nulldata':
-                // Ignore
-                break;
-              default:
-                console.log("Unrecognized scriptPubKey type", body.result.vout[i]);
-            }
+                  blockchainIndexing.addrDb.put(addr + "-txos", JSON.stringify(txos), function(err) {
+                    if(err) console.log("Error updating address TXOs:", err);
+                    innerInnerCallback();
+                  });
+                });
+
+              };
+              var processAddressQueue = async.queue(processAddress, 1);
+              processAddressQueue.drain = function() {
+                blockchainIndexing.txoDb.get("txo-" + hash + "-" + txo.index, function (err, value) {
+                  var updatedTxo = {};
+                  if(value) {
+                    updatedTxo = JSON.parse(value);
+                  }
+                  updatedTxo.v = txo.value;
+
+                  blockchainIndexing.txoDb.put("txo-" + hash + "-" + txo.index, JSON.stringify(updatedTxo), function(err) {
+                    innerCallback();
+                  });
+                });
+              }
+              if(txo.scriptPubKey.addresses.length == 0) processAddressQueue.drain();
+              for(var j = 0; j < txo.scriptPubKey.addresses.length; j++) {
+                var addr = txo.scriptPubKey.addresses[j];
+                processAddressQueue.push(addr);
+              }
+
+              break;
+            case 'nulldata':
+              // Ignore
+              innerCallback();
+              break;
+            default:
+              console.log("Unrecognized scriptPubKey type", txo);
+              innerCallback();
           }
-          //console.log("Found vout", );
         }
-        
-        callback();
-      } else {
-        console.log("Error", err);
-        blockchainIndexing.timeout = setTimeout(processTx, 10, hash, callback);
-        return;
       }
-    //});
+
+      var processVinout = function(payload, callback) {
+        var innerTimer = blockchainIndexing.winston.startTimer();
+        if(payload.txi) processVin(payload.txi, function() {
+          innerTimer.done("Processed vin " + payload.txi.index);
+          callback();
+        });
+        if(payload.txo) processVout(payload.txo, function() {
+          innerTimer.done("Processed vout " + payload.txo.index);
+          callback();
+        });
+      }
+
+      var vinoutQueue = async.queue(processVinout, 10);
+      vinoutQueue.drain = function() {
+        timer.done("Done processing vin/vout");
+
+        callback();
+      }
+      var count = 0;
+      for(var i = 0; i < body.result.vin.length; i++) {
+        var txi = body.result.vin[i];
+        txi.index = i;
+        vinoutQueue.push({ txi : txi });
+        count++;
+      }
+
+      for(var i = 0; i < body.result.vout.length; i++) {
+        var txo = body.result.vout[i];
+        txo.index = i;
+        vinoutQueue.push({txo : txo});
+        count++;
+      }
+
+      if(count == 0) vinoutQueue.drain();
+    } else {
+        console.log(err);
+        blockchainIndexing.timeout = setTimeout(processTx, 10, payload, callback);
+        return;  
+    }
   });
 }
 
 
 var processBlock = function(index, callback) {
-  if(index % 1000 === 0)
-    console.log("Processing block", index);
+  var timer = blockchainIndexing.winston.startTimer();
+
+  if(index % 10 == 0)
+  {
+    var timePer100 = new Date() - last100;
+    last100 = new Date();
+    console.log("Processing block", index, "Time per 10:", timePer100, "TX:", last100txes, "TXO:", last100txos);
+    last100txos = 0;
+    last100txis = 0;
+    last100txes = 0;
+  }
+  var started = new Date();
   blockchainIndexing.vertcoind.request('getblockhash', [index], function(err, result, body) {
-    if(!err && body.result) {
-    blockchainIndexing.vertcoind.request('getblock', [body.result], function(err, result, body) {
-      if(!err && body.result) {
-          //console.log(body.result);
-          var txQueue = async.queue(processTx, 1);
-          txQueue.drain = function() {
-            //var txn = blockchainIndexing.env.beginTxn();
-            blockchainIndexing.db.put("lastBlock", index, {"sync": true});        
-            //var value = txn.putString(blockchainIndexing.db, "lastBlock", index);
-            //txn.commit();
-            callback();
-          };
-          for(i = 0; i < body.result.tx.length; i++) {
-            txQueue.push(body.result.tx[i]);
-          }
-      } else {
-        console.log("Error", err);
-        blockchainIndexing.timeout = setTimeout(processBlock, 10, index, callback);
-        return;
-      }
-    });
-    } else {
-        console.log("Error", err);
-        blockchainIndexing.timeout = setTimeout(processBlock, 10, index, callback);
-        return;
-    }
+        timer.done("Get blockhash " + index);
+        if(!err && body.result) {
+            blockchainIndexing.vertcoind.request('getblock', [body.result], function(err, result, body) {
+              timer.done("Get block " + index);
+              if(!err && body.result) {
+                  var txQueue = async.queue(processTx, 1);
+                  txQueue.drain = function() {
+                    blockchainIndexing.settingsDb.put("lastBlock", index, function(err) {
+                      timer.done("Processed block " + index);
+                      callback();
+                    });
+                  };
+                  for(i = 0; i < body.result.tx.length; i++) {
+                    txQueue.push({ tx : body.result.tx[i] });
+                  }
+              } else {
+                console.log(err);
+                blockchainIndexing.timeout = setTimeout(processBlock, 10, index, callback);
+                return;  
+              }
+            });
+        } else {
+            console.log(err);
+            blockchainIndexing.timeout = setTimeout(processBlock, 10, index, callback);
+            return;  
+        }
   });
 
 
@@ -177,16 +237,11 @@ var processIndexes = function() {
         blockchainIndexing.timeout = setTimeout(processIndexes, 1000 * 120);
         return;
     }
-    
-    blockchainIndexing.db.get("lastBlock", function(error, value) {
-      if(error) {
-        value = 0;
-      }
-      
-      value = parseInt(value);
-      
-      var startBlock = value;
-    console.log("Starting building additional indexes from block: ",value);
+
+  blockchainIndexing.settingsDb.get("lastBlock", function(err, value) {
+    var startBlock = 0;
+    if(value) startBlock = parseInt(value);
+    console.log("Starting building additional indexes from block: ",startBlock);
     blockchainIndexing.vertcoind.request('getblockcount', [], function(err, result, body) {
       var blockQueue = async.queue(processBlock, 1);
       blockQueue.drain = function() {
@@ -202,31 +257,6 @@ var processIndexes = function() {
     });
   });
   });
-
-  //var txn = blockchainIndexing.env.beginTxn();
-  //var value = txn.getString(blockchainIndexing.db, "lastBlock");
-  //txn.commit();
- 
-
-  /*if(!value) value = -1;
-  else value = parseInt(value);
-
-    var startBlock = value;
-    console.log("Starting building additional indexes from block: ",value);
-    blockchainIndexing.vertcoind.request('getblockcount', [], function(err, result, body) {
-      var blockQueue = async.queue(processBlock, 1);
-      blockQueue.drain = function() {
-        blockchainIndexing.timeout = setTimeout(processIndexes, 1000);
-      };
-      if(startBlock == body.result)
-        blockQueue.drain();
-      else
-        for(i = startBlock + 1; i <= body.result; i++) {
-          blockQueue.push(i);
-        }
-
-    });*/
-
 };
 
 ensureIndexFolder(function() {

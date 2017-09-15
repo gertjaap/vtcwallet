@@ -54,7 +54,7 @@ vertcoind.request = function(method, params, callback) {
   request.post('http://localhost:5888/',{ 'auth' : {
     user : vertcoind.rpcUser,
     pass : vertcoind.rpcPassword
-  }, 'body' : JSON.stringify(requestBody), 'timeout': 3000}, function(err, result, body) {
+  }, 'body' : JSON.stringify(requestBody), 'timeout': 30}, function(err, result, body) {
     try {
       body = JSON.parse(body);
     } catch (e) {
