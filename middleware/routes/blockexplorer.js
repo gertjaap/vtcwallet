@@ -3,30 +3,41 @@ var router = express.Router();
 const async = require('async');
 /* GET users listing. */
 router.get('/address/:addr', function(req, res, next) {
-  router.blockchainIndexing.addrDb.get(req.params.addr + "-txos", function(err, value) {
-    var txos = [];
-    if(value) txos = JSON.parse(value);
-    var expandedTxos = [];
+  var expandedTxos = [];
 
-    var expandTxo = function(txo, callback) {
-      router.blockchainIndexing.txoDb.get("txo-" + txo.txid + "-" + txo.vout, function (err, json) {
-        if(json) {
-          var txoObject = JSON.parse(json);
+  var expandTxo = function(txo, callback) {
+    router.blockchainIndexing.db.get("txo-" + txo.txid + "-" + txo.vout, function (err, value) {
+      router.blockchainIndexing.db.get("txo-" + txo.txid + "-" + txo.vout + "-spent", function (err, spent) {
+        if(value) {
+          var txoObject = { value: value };
           txoObject.txid = txo.txid;
           txoObject.vout = txo.vout;
+          if(spent) {
+            txoObject.spent = true;
+            txoObject.spentTxID = spent;
+          }
           expandedTxos.push(txoObject);
         }
         callback();
       });
-    };
-    var queue = async.queue(expandTxo, 10);
-    queue.drain = function() {
-      res.json({txos:expandedTxos});
-    }
-    for(var i = 0; i < txos.length; i++) {
-      queue.push(txos[i]);
-    }
-    if(txos.length == 0) queue.drain();
+    });
+  };
+
+  var queue = async.queue(expandTxo, 10);
+  queue.drain = function() {
+    res.json({txos:expandedTxos});
+  }
+  var count = 0;
+  router.blockchainIndexing.db.createReadStream({
+    start: req.params.addr + "-txo-00001",
+    end: req.params.addr + "-txo-99999"
+  })
+  .on('data', function(data) {
+    queue.push(JSON.parse(data.value));
+    count++;
+  })
+  .on('end', function() {
+    if(count == 0) queue.drain();
   });
 });
 

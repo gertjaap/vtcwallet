@@ -4,6 +4,7 @@ const ini = require('ini');
 const uuidv4 = require('uuid/v4');
 const async = require('async');
 const level = require('level');
+const zpad = require('zpad');
 const bech32 = require('bech32');
 
 var blockCache = {};
@@ -14,7 +15,7 @@ var last100txis = 0;
 var last100txes = 0;
 
 var ensureIndexFolder = function(callback) {
-  var indexDir = path.join(__dirname, '..', 'blockchainIndex');
+  var indexDir = path.join(__dirname, '..');
   if(!fs.existsSync(indexDir))
   {
     fs.mkdir(indexDir, function(err) {
@@ -27,10 +28,9 @@ var ensureIndexFolder = function(callback) {
 }
 
 var setup = function(callback) {
-  var indexDir = path.join(__dirname, '..', 'blockchainIndex');
+  var indexDir = path.join(__dirname, '..');
 
-  blockchainIndexing.db = level(path.join(indexDir,'blockChainIndex'));
-
+  blockchainIndexing.db = level(path.join(indexDir,'blockchainIndex'));
   callback();
 }
 
@@ -46,6 +46,21 @@ var readKey = function(key, callback) {
 
 var putKey = function(key, value) {
   blockCache[key] = value;
+}
+
+var getNextIndex = function(key, callback) {
+  var nextIndex = 0;
+  blockchainIndexing.db.createKeyStream({
+    start: key + "-00001",
+    end: key + "-99999"
+  })
+  .on('data', function() {
+    nextIndex++;
+  })
+  .on('end', function() {
+    nextIndex++;
+    callback(nextIndex);
+  });
 }
 
 var commitKeys = function(callback) {
@@ -85,18 +100,8 @@ var processTx = function(payload, callback) {
 
         last100txis++;
 
-
-        // Mark the output as spent
-        readKey("txo-" + txi.txid + "-" + txi.vout, function (value) {
-          var txo = {};
-          if(value) {
-            txo = JSON.parse(value);
-          }
-          txo.spent = true;
-          txo.spentTxID = hash;
-          putKey("txo-" + txi.txid + "-" + txi.vout, JSON.stringify(txo));
-          innerCallback();
-        });
+        putKey("txo-" + txi.txid + "-" + txi.vout + "-spent", hash);
+        innerCallback();
       };
 
       var processVout = function(txo, innerCallback) {
@@ -106,38 +111,23 @@ var processTx = function(payload, callback) {
           return;
         } else {
           var processAddress = function(addr, innerInnerCallback) {
-
-            readKey(addr + "-txos", function(err, value) {
-
-              var txos = [];
-              if(value) txos = JSON.parse(value);
-              txos.push({txid : hash, vout : txo.index});
-
-              putKey(addr + "-txos", JSON.stringify(txos));
+            getNextIndex(addr + "-txo", function(nextIndex){
+              putKey(addr + "-txo-" + zpad(nextIndex,5), JSON.stringify({txid : hash, vout : txo.index}));
               innerInnerCallback();
             });
-
           };
-          
+
           var addrDrain = function() {
-            readKey("txo-" + hash + "-" + txo.index, function (value) {
-              var updatedTxo = {};
-              if(value) {
-                updatedTxo = JSON.parse(value);
-              }
-              updatedTxo.v = txo.value;
-
-              putKey("txo-" + hash + "-" + txo.index, JSON.stringify(updatedTxo));
-              innerCallback();
-            });
+            putKey("txo-" + hash + "-" + txo.index, txo.value);
+            innerCallback();
           };
-        
+
           switch(txo.scriptPubKey.type) {
             case 'pubkey':
             case 'scripthash':
             case 'pubkeyhash':
               last100txos++;
-              
+
               var processAddressQueue = async.queue(processAddress, 10);
               processAddressQueue.drain = addrDrain;
               if(txo.scriptPubKey.addresses.length == 0) processAddressQueue.drain();
@@ -151,7 +141,7 @@ var processTx = function(payload, callback) {
             case 'witness_v0_scripthash':
                 last100txos++;
                 var hashes = txo.scriptPubKey.asm.split(' ');
-                
+
                 var processAddressQueue = async.queue(processAddress, 1);
                 processAddressQueue.drain = addrDrain;
                 if(hashes.length == 0) processAddressQueue.drain();
@@ -262,8 +252,10 @@ var processIndexes = function() {
     blockchainIndexing.vertcoind.request('getblockcount', [], function(err, result, body) {
       var blockQueue = async.queue(processBlock, 1);
       blockQueue.drain = function() {
-        commitKeys(callback);
-        blockchainIndexing.timeout = setTimeout(processIndexes, 1000);
+        commitKeys(function() {
+          blockchainIndexing.timeout = setTimeout(processIndexes, 1000);
+        });
+
       };
       if(startBlock == body.result)
         blockQueue.drain();
