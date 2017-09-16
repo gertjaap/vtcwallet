@@ -63,7 +63,8 @@ vertcoind.request = function(method, params, callback, retry) {
         body = JSON.parse(body);
       } catch (e) {
         console.log("Error parsing JSON",e,"\r\nJSON:\r\n",body);
-
+        vertcoind.request(method, params, callback, retry);
+        return;
       }
       callback(err, result, body);
     }
@@ -159,6 +160,7 @@ var checkRpcConfig = function(callback) {
   if(!config.rpcuser || !config.rpcpassword) {
     config.rpcuser = 'vertcoinrpc';
     config.rpcpassword = uuidv4();
+    config.rpcworkqueue = 64;
   }
 
   fs.writeFileSync(vertcoindConfigFile, ini.stringify(config));

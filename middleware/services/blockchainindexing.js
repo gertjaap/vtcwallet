@@ -4,6 +4,7 @@ const ini = require('ini');
 const uuidv4 = require('uuid/v4');
 const async = require('async');
 const level = require('level');
+const bech32 = require('bech32');
 
 var blockCache = {};
 var blockchainIndexing = {};
@@ -104,36 +105,41 @@ var processTx = function(payload, callback) {
           innerCallback();
           return;
         } else {
+          var processAddress = function(addr, innerInnerCallback) {
+
+            readKey(addr + "-txos", function(err, value) {
+
+              var txos = [];
+              if(value) txos = JSON.parse(value);
+              txos.push({txid : hash, vout : txo.index});
+
+              putKey(addr + "-txos", JSON.stringify(txos));
+              innerInnerCallback();
+            });
+
+          };
+          
+          var addrDrain = function() {
+            readKey("txo-" + hash + "-" + txo.index, function (value) {
+              var updatedTxo = {};
+              if(value) {
+                updatedTxo = JSON.parse(value);
+              }
+              updatedTxo.v = txo.value;
+
+              putKey("txo-" + hash + "-" + txo.index, JSON.stringify(updatedTxo));
+              innerCallback();
+            });
+          };
+        
           switch(txo.scriptPubKey.type) {
             case 'pubkey':
+            case 'scripthash':
             case 'pubkeyhash':
               last100txos++;
-              var processAddress = function(addr, innerInnerCallback) {
-
-                readKey(addr + "-txos", function(err, value) {
-
-                  var txos = [];
-                  if(value) txos = JSON.parse(value);
-                  txos.push({txid : hash, vout : txo.index});
-
-                  putKey(addr + "-txos", JSON.stringify(txos));
-                  innerInnerCallback();
-                });
-
-              };
+              
               var processAddressQueue = async.queue(processAddress, 10);
-              processAddressQueue.drain = function() {
-                readKey("txo-" + hash + "-" + txo.index, function (value) {
-                  var updatedTxo = {};
-                  if(value) {
-                    updatedTxo = JSON.parse(value);
-                  }
-                  updatedTxo.v = txo.value;
-
-                  putKey("txo-" + hash + "-" + txo.index, JSON.stringify(updatedTxo));
-                  innerCallback();
-                });
-              }
+              processAddressQueue.drain = addrDrain;
               if(txo.scriptPubKey.addresses.length == 0) processAddressQueue.drain();
               for(var j = 0; j < txo.scriptPubKey.addresses.length; j++) {
                 var addr = txo.scriptPubKey.addresses[j];
@@ -141,6 +147,21 @@ var processTx = function(payload, callback) {
               }
 
               break;
+            case 'witness_v0_keyhash':
+            case 'witness_v0_scripthash':
+                last100txos++;
+                var hashes = txo.scriptPubKey.asm.split(' ');
+                
+                var processAddressQueue = async.queue(processAddress, 1);
+                processAddressQueue.drain = addrDrain;
+                if(hashes.length == 0) processAddressQueue.drain();
+                for(var j = 1; j < hashes.length; j++) {
+                    var hashWords = bech32.toWords(Buffer.from(hashes[j], 'hex'));
+                    var addr = bech32.encode('vtc', hashWords);
+                    processAddressQueue.push(addr);
+                }
+
+                break;
             case 'nulldata':
               // Ignore
               innerCallback();
@@ -187,7 +208,7 @@ var processTx = function(payload, callback) {
 
       if(count == 0) vinoutQueue.drain();
     }
-  });
+  }, true);
 }
 
 
@@ -219,9 +240,9 @@ var processBlock = function(index, callback) {
       for(i = 0; i < body.result.tx.length; i++) {
         txQueue.push({ tx : body.result.tx[i] });
       }
-    });
+    }, true);
 
-  });
+  }, true);
 
 
 }
@@ -251,7 +272,7 @@ var processIndexes = function() {
           blockQueue.push(i);
         }
 
-    });
+    }, true);
   });
 };
 
