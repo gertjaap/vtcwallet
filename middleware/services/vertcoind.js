@@ -156,11 +156,12 @@ var checkRpcConfig = function(callback) {
   config.server = '1';
   config.rpcallowip = '127.0.0.1';
   config.rpcport = '5888';
-
+  config.rpcworkqueue = 64;
+  
   if(!config.rpcuser || !config.rpcpassword) {
     config.rpcuser = 'vertcoinrpc';
     config.rpcpassword = uuidv4();
-    config.rpcworkqueue = 64;
+
   }
 
   fs.writeFileSync(vertcoindConfigFile, ini.stringify(config));
