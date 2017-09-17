@@ -59,6 +59,14 @@ var getNextIndex = function(key, callback) {
   })
   .on('end', function() {
     nextIndex++;
+    for (var cacheKey in blockCache) {
+      if (blockCache.hasOwnProperty(cacheKey)) {
+        if(cacheKey.substring(0, key.length) === key)
+        {
+          nextIndex++;
+        }
+      }
+    }
     callback(nextIndex);
   });
 }
@@ -244,7 +252,7 @@ var processIndexes = function() {
         blockchainIndexing.timeout = setTimeout(processIndexes, 1000);
         return;
     }
-  
+
     blockchainIndexing.vertcoind.request('getblockchaininfo', [], function(err, result, body) {
         if(err) {
             console.log("Error", err);
@@ -259,7 +267,7 @@ var processIndexes = function() {
         }
 
         readKey("lastBlock", function(value) {
-        var startBlock = 0;
+        var startBlock = 780000;
         if(value) startBlock = parseInt(value);
         console.log("Starting building additional indexes from block: ",startBlock);
         blockchainIndexing.vertcoind.request('getblockcount', [], function(err, result, body) {
