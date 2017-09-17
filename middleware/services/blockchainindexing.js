@@ -59,14 +59,8 @@ var getNextIndex = function(key, callback) {
   })
   .on('end', function() {
     nextIndex++;
-    for (var cacheKey in blockCache) {
-      if (blockCache.hasOwnProperty(cacheKey)) {
-        if(cacheKey.substring(0, key.length) === key)
-        {
-          nextIndex++;
-        }
-      }
-    }
+    while(blockCache[key + "-" + zpad(nextIndex,5)] !== undefined)
+      nextIndex++;
     callback(nextIndex);
   });
 }
