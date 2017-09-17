@@ -267,7 +267,7 @@ var processIndexes = function() {
         }
 
         readKey("lastBlock", function(value) {
-        var startBlock = 780000;
+        var startBlock = 0;
         if(value) startBlock = parseInt(value);
         console.log("Starting building additional indexes from block: ",startBlock);
         blockchainIndexing.vertcoind.request('getblockcount', [], function(err, result, body) {
