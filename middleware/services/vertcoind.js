@@ -85,7 +85,7 @@ var checkJsonRPCAvailable = function(callback) {
 
 var startNode = function(callback) {
   var process = path.join(__dirname, '..', 'vertcoind' , processName);
-  var arguments = ['--txindex','--datadir=' + path.join(__dirname, '..', 'vertcoind', 'data')];
+  var arguments = ['--disablewallet', '--txindex','--datadir=' + path.join(__dirname, '..', 'vertcoind', 'data')];
   vertcoind.nodeProcess = spawn(process, arguments);
   vertcoind.nodeProcess.stdout.on('data', (data) => {
     console.log(`vertcoind [out]: ${data}`);
