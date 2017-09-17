@@ -55,7 +55,7 @@ vertcoind.request = function(method, params, callback, retry) {
   request.post('http://localhost:5888/',{ 'auth' : {
     user : vertcoind.rpcUser,
     pass : vertcoind.rpcPassword
-  }, 'body' : JSON.stringify(requestBody), 'timeout' : 30}, function(err, result, body) {
+  }, 'body' : JSON.stringify(requestBody), 'timeout' : 300}, function(err, result, body) {
     if(err && !retry === false) {
       vertcoind.request(method, params, callback, retry);
     } else {
@@ -157,7 +157,7 @@ var checkRpcConfig = function(callback) {
   config.rpcallowip = '127.0.0.1';
   config.rpcport = '5888';
   config.rpcworkqueue = 64;
-  
+
   if(!config.rpcuser || !config.rpcpassword) {
     config.rpcuser = 'vertcoinrpc';
     config.rpcpassword = uuidv4();
