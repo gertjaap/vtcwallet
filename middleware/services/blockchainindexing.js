@@ -239,33 +239,47 @@ var processBlock = function(index, callback) {
 
 
 var processIndexes = function() {
-  console.log("Processing additional indexes");
-  if(!blockchainIndexing.vertcoind || blockchainIndexing.vertcoind.progress != 100) {
-    blockchainIndexing.timeout = setTimeout(processIndexes, 1000);
-    return;
-  }
-
-  readKey("lastBlock", function(value) {
-    var startBlock = 0;
-    if(value) startBlock = parseInt(value);
-    console.log("Starting building additional indexes from block: ",startBlock);
-    blockchainIndexing.vertcoind.request('getblockcount', [], function(err, result, body) {
-      var blockQueue = async.queue(processBlock, 1);
-      blockQueue.drain = function() {
-        commitKeys(function() {
-          blockchainIndexing.timeout = setTimeout(processIndexes, 1000);
-        });
-
-      };
-      if(startBlock == body.result)
-        blockQueue.drain();
-      else
-        for(i = startBlock + 1; i <= body.result; i++) {
-          blockQueue.push(i);
+    console.log("Processing additional indexes");
+    if(!blockchainIndexing.vertcoind || blockchainIndexing.vertcoind.progress != 100) {
+        blockchainIndexing.timeout = setTimeout(processIndexes, 1000);
+        return;
+    }
+  
+    blockchainIndexing.vertcoind.request('getblockchaininfo', [], function(err, result, body) {
+        if(err) {
+            console.log("Error", err);
+            blockchainIndexing.timeout = setTimeout(processIndexes, 1000);
+            return;
         }
 
-    }, true);
-  });
+        if(body.result.verificationprogress < 0.999) {
+            console.log("vertcoind not yet synced, waiting. Progress: " + body.result.verificationprogress);
+            blockchainIndexing.timeout = setTimeout(processIndexes, 1000 * 120);
+            return;
+        }
+
+        readKey("lastBlock", function(value) {
+        var startBlock = 0;
+        if(value) startBlock = parseInt(value);
+        console.log("Starting building additional indexes from block: ",startBlock);
+        blockchainIndexing.vertcoind.request('getblockcount', [], function(err, result, body) {
+          var blockQueue = async.queue(processBlock, 1);
+          blockQueue.drain = function() {
+            commitKeys(function() {
+              blockchainIndexing.timeout = setTimeout(processIndexes, 1000);
+            });
+
+          };
+          if(startBlock == body.result)
+            blockQueue.drain();
+          else
+            for(i = startBlock + 1; i <= body.result; i++) {
+              blockQueue.push(i);
+            }
+
+        }, true);
+        });
+    });
 };
 
 ensureIndexFolder(function() {
