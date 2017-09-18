@@ -72,8 +72,10 @@ router.get('/xpubBalance/:xpub', function(req, res, next) {
         queue.push(txos[i]);
       }
       if(txos.length > 0) {
-        maxNode++;
-        addressQueue.push(maxNode);
+        while(maxNode < index + 10) {
+          maxNode++;
+          addressQueue.push(maxNode);
+        }
       }
       callback();
     });
@@ -133,8 +135,10 @@ router.get('/xpubTxos/:xpub', function(req, res, next) {
         queue.push(txos[i]);
       }
       if(txos.length > 0) {
-        maxNode++;
-        addressQueue.push(maxNode);
+        while(maxNode < index + 10) {
+          maxNode++;
+          addressQueue.push(maxNode);
+        }
       }
       callback();
     });
