@@ -1,5 +1,6 @@
 const spawn = require('child_process').spawn;
-const request = require('request')
+const request = require('request');
+const async = require('async');
 const fs = require('fs');
 const path = require('path');
 const ini = require('ini');
@@ -41,6 +42,25 @@ var bootstrap = function() {
     });
   });
 
+}
+
+var processVertcoinRequest = function(payload, callback) {
+  vertcoind.request(payload.method, payload.params, function(err, result, body) {
+    payload.callback(err, result, body);
+    callback();
+  }, payload.retry);
+}
+
+var throttledQueue = async.queue(processVertcoinRequest, 2);
+
+vertcoind.throttledRequest = function(method, params, callback, retry) {
+  if(retry === undefined) retry = true;
+  throttledQueue.push({
+    method: method,
+    params: params,
+    callback : callback,
+    retry : retry
+  });
 }
 
 vertcoind.request = function(method, params, callback, retry) {
