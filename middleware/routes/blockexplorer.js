@@ -34,7 +34,7 @@ router.get('/addressBalance/:addr', function(req, res, next) {
 
   var queue = async.queue(expandTxoLocal, 10);
   queue.drain = function() {
-    res.json({txos:expandedTxos});
+    res.json({balance:balance});
   }
   getAddressTxos(req.params.addr, function(txos) {
     for(var i = 0; i < txos.length; i++)
