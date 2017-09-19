@@ -174,8 +174,8 @@ router.get('/xpubTxos/:xpub', function(req, res, next) {
 var getAddressTxos = function(addr, callback) {
   var txos = [];
   router.blockchainIndexing.db.createReadStream({
-    start: addr + "-txo-00001",
-    end: addr + "-txo-99999"
+    start: addr + "-txo-00000001",
+    end: addr + "-txo-99999999"
   })
   .on('data', function(data) {
     txos.push(JSON.parse(data.value));
