@@ -51,8 +51,8 @@ var putKey = function(key, value) {
 var getNextIndex = function(key, callback) {
   var nextIndex = 0;
   blockchainIndexing.db.createKeyStream({
-    start: key + "-00001",
-    end: key + "-99999"
+    start: key + "-00000001",
+    end: key + "-99999999"
   })
   .on('data', function() {
     nextIndex++;
@@ -149,6 +149,8 @@ var processTx = function(payload, callback) {
                 if(hashes.length == 0) processAddressQueue.drain();
                 for(var j = 1; j < hashes.length; j++) {
                     var hashWords = bech32.toWords(Buffer.from(hashes[j], 'hex'));
+                    // first word should be the witness version
+                    hashWords = [0].concat(hashWords);
                     var addr = bech32.encode('vtc', hashWords);
                     processAddressQueue.push(addr);
                 }
