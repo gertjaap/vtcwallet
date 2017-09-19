@@ -59,7 +59,7 @@ var getNextIndex = function(key, callback) {
   })
   .on('end', function() {
     nextIndex++;
-    while(blockCache[key + "-" + zpad(nextIndex,5)] !== undefined)
+    while(blockCache[key + "-" + zpad(nextIndex,8)] !== undefined)
       nextIndex++;
     callback(nextIndex);
   });
@@ -114,7 +114,7 @@ var processTx = function(payload, callback) {
         } else {
           var processAddress = function(addr, innerInnerCallback) {
             getNextIndex(addr + "-txo", function(nextIndex){
-              putKey(addr + "-txo-" + zpad(nextIndex,5), JSON.stringify({txid : hash, vout : txo.index}));
+              putKey(addr + "-txo-" + zpad(nextIndex,8), JSON.stringify({txid : hash, vout : txo.index}));
               innerInnerCallback();
             });
           };
