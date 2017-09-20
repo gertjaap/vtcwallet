@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
+import { FormsModule }   from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
@@ -10,7 +11,6 @@ import { NAV_DROPDOWN_DIRECTIVES } from './shared/nav-dropdown.directive';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
 import { SIDEBAR_TOGGLE_DIRECTIVES } from './shared/sidebar.directive';
 import { AsideToggleDirective } from './shared/aside.directive';
-import { BreadcrumbsComponent } from './shared/breadcrumb.component';
 
 import { SyncStatusComponent } from './shared/syncstatus.component';
 import { BalanceComponent } from './shared/balance.component';
@@ -33,6 +33,7 @@ import { SharedModule } from './shared/shared.module';
     TabsModule.forRoot(),
     ChartsModule,
     HttpClientModule,
+    FormsModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -45,7 +46,6 @@ import { SharedModule } from './shared/shared.module';
     AppComponent,
     FullLayoutComponent,
     NAV_DROPDOWN_DIRECTIVES,
-    BreadcrumbsComponent,
     SyncStatusComponent,
     BalanceComponent,
     SIDEBAR_TOGGLE_DIRECTIVES,

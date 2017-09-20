@@ -1,12 +1,83 @@
 <div *ngIf="!checkedInitialization" class="animated fadeIn">
   Please wait...
 </div>
-<div *ngIf="checkedInitialization" class="animated fadeIn">
-  Onboarding {{ '_APP_TITLE_' | translate }}!
-  <button (click)="onboardingComplete()">Complete</button>
-</div>
-<footer>
-  <button class="btn btn-outline-secondary" [disabled]="noPrevious">Previous</button>
-  <button class="btn btn-outline-primary" [disabled]="noNext">Next</button>
+<div *ngIf="checkedInitialization" class="animated fadeIn fullPage">
+  <div *ngIf="step == 1">
+    <h1>{{ '_ONBOARDING_WELCOME_TITLE_' | translate }}</h1>
+    <p>{{ '_ONBOARDING_WELCOME_BODY_' | translate }}</p>
+  </div>
+  <div *ngIf="step == 2">
+    <h1>{{ '_ONBOARDING_CHOOSE_CONNECTION_TITLE_' | translate }}</h1>
+    <p>{{ '_ONBOARDING_CHOOSE_CONNECTION_INTRO_' | translate }}</p>
+    <div class="row">
+      <div class="col-md-6 col-xs-12">
+        <div class="card">
+          <div class="card-block">
+            <h2>{{ '_ONBOARDING_CHOOSE_CONNECTION_STANDALONE_TITLE_' | translate }}</h2>
+            <p>
+              <small>{{ '_ONBOARDING_CHOOSE_CONNECTION_STANDALONE_DESCRIPTION_' | translate }}</small>
+            </p>
+          </div>
+          <div class="card-footer text-center">
+            <button class="btn btn-outline-primary" (click)="chooseStandalone()">
+              <i class="icon icon-check"></i> {{ '_ONBOARDING_CHOOSE_CONNECTION_STANDALONE_CHOOSE_' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-xs-12">
+        <div class="card">
+          <div class="card-block">
+            <h2>{{ '_ONBOARDING_CHOOSE_CONNECTION_TRUSTED_SERVER_TITLE_' | translate }}</h2>
+            <p>
+              <small>{{ '_ONBOARDING_CHOOSE_CONNECTION_TRUSTED_SERVER_DESCRIPTION_' | translate }}</small>
+            </p>
+          </div>
+          <div class="card-footer text-center">
+            <button class="btn btn-outline-primary" (click)="chooseTrustedServer()">
+              <i class="icon icon-check"></i> {{ '_ONBOARDING_CHOOSE_CONNECTION_TRUSTED_SERVER_CHOOSE_' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="step == 3">
+    <h1>{{ '_ONBOARDING_CHOOSE_SERVER_TITLE_' | translate }}</h1>
+    <p>{{ '_ONBOARDING_CHOOSE_SERVER_INTRO_' | translate }}</p>
+    <table class="table table-bordered table-striped table-condensed">
+      <thead>
+        <tr>
+          <th>&nbsp;</th>
+          <th>{{ '_ONBOARDING_CHOOSE_SERVER_NAME_' | translate }}</th>
+          <th>{{ '_ONBOARDING_CHOOSE_SERVER_LOCATION_' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let server of servers">
+          <td><input type="radio" name="server" [value]="server.name" [(ngModel)]="serverName" /></td>
+          <td>{{server.name}}</td>
+          <td>{{server.location}}</td>
+        </tr>
+      </tbody>
+    </table>
 
-</footer>
+  </div>
+  <div *ngIf="(step == 3 && serverType == 'standalone') || (step == 4 && serverType == 'trusted')">
+
+  </div>
+
+
+
+
+      <div class="bottomLeftButtons">
+        <button *ngIf="step > 1" class="btn btn-outline-secondary" (click)="previous()" [disabled]="disabledPrevious">Previous</button>
+      </div>
+      <div class="bottomRightButtons">
+        <button *ngIf="step < maxSteps && step !== 2" class="btn btn-outline-primary" (click)="next()" [disabled]="disabledNext">Next</button>
+        <button *ngIf="step == maxSteps && step !== 2" class="btn btn-outline-success" (click)="finish()" [disabled]="disabledFinish">Finish</button>
+      </div>
+
+
+
+</div>

@@ -13,3 +13,23 @@ div.balance {
   }
   margin-right: 20px;
 }
+
+div.fullPage {
+  width: 100%;
+  height: 100%;
+  padding-top: 20px;
+  position: relative;
+  overflow-y : auto;
+}
+
+div.bottomLeftButtons {
+  position: absolute;
+  left: 0px;
+  bottom: 30px;
+}
+
+div.bottomRightButtons {
+  position: absolute;
+  right: 0px;
+  bottom: 30px;
+}

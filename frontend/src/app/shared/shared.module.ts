@@ -1,12 +1,15 @@
 import { NgModule, ModuleWithProviders } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { FormsModule }   from '@angular/forms';
 
 @NgModule({
   imports: [
-    TranslateModule
+    TranslateModule,
+    FormsModule
   ],
   exports: [
-    TranslateModule
+    TranslateModule,
+    FormsModule
   ]
 })
 export class SharedModule {

@@ -1,3 +1,21 @@
 {
-    "_APP_TITLE_": "Vertcoin Wallet"
+    "_APP_TITLE_": "Vertcoin Wallet",
+    "_ONBOARDING_WELCOME_TITLE_" : "Let's set you up",
+    "_ONBOARDING_WELCOME_BODY_" : "Welcome to the Vertcoin Wallet. In a few steps, we'll be setting your wallet up. Click Next to get started.",
+    "_ONBOARDING_CHOOSE_CONNECTION_TITLE_" : "Choose your connection type",
+    "_ONBOARDING_CHOOSE_CONNECTION_INTRO_" : "Please choose how you would like to connect to the Vertcoin blockchain:",
+    "_ONBOARDING_CHOOSE_CONNECTION_STANDALONE_TITLE_" : "Standalone",
+    "_ONBOARDING_CHOOSE_CONNECTION_STANDALONE_DESCRIPTION_" : "This will download a full copy of the Vertcoin blockchain, and index it locally. This means you are fully self-supporting. But the initial set up might take a while depending on your connection speed. About 5 GB of storage is needed.",
+    "_ONBOARDING_CHOOSE_CONNECTION_STANDALONE_CHOOSE_" : "Choose standalone",
+    "_ONBOARDING_CHOOSE_CONNECTION_TRUSTED_SERVER_TITLE_" : "Trusted server",
+    "_ONBOARDING_CHOOSE_CONNECTION_TRUSTED_SERVER_DESCRIPTION_" : "This will connect the wallet to a trusted server. All sensitive information is stored on your own computer, but the blockchain and its index are accessed via a trusted server. You can choose the node you wish to use and trust.",
+    "_ONBOARDING_CHOOSE_CONNECTION_TRUSTED_SERVER_CHOOSE_" : "Choose trusted server",
+    "_ONBOARDING_CHOOSE_SERVER_TITLE_" : "Choose your trusted server",
+    "_ONBOARDING_CHOOSE_SERVER_INTRO_" : "Select the server you wish to use from the list below",
+    "_ONBOARDING_CHOOSE_SERVER_NAME_" : "Name",
+    "_ONBOARDING_CHOOSE_SERVER_LOCATION_" : "Location",
+    "_ONBOARDING_CHOOSE_SERVER_CUSTOM_" : "... or enter the URL manually:"
+
+
+
 }
