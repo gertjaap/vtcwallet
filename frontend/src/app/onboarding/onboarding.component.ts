@@ -1,6 +1,7 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { SettingsService } from '../services/settings.service';
+import { WalletService } from '../services/wallet.service';
 @Component({
   templateUrl: 'onboarding.component.html'
 })
@@ -9,14 +10,15 @@ export class OnboardingComponent {
   disabledNext : boolean = false;
   disabledFinish : boolean = false;
   disabledPrevious : boolean = false;
-  step : number = 1;
+  step : string = 'intro';
+  recoverySeed : string = '';
+  checkPhrase : string = '';
   serverName : string = "";
-  maxSteps : number = 4;
   serverType : string = '';
   servers : { name: string, location: string, hostName : string }[] = [
     { name : "vtc.xchan.gr", location: "Europe (Netherlands)", hostName: "vtc.xchan.gr" }
   ];
-  constructor(private changeDetectorRef : ChangeDetectorRef, private settingsService : SettingsService, private router : Router ) {
+  constructor(private walletService : WalletService, private changeDetectorRef : ChangeDetectorRef, private settingsService : SettingsService, private router : Router ) {
 
   }
 
@@ -35,39 +37,87 @@ export class OnboardingComponent {
   }
 
   next() : void {
-    console.log("Increasing step from ", this.step);
-    this.step = this.step + 1;
-    console.log("Set step to ", this.step);
+    switch(this.step) {
+      case 'intro':
+        this.step = 'conntype';
+        break;
+      case 'pickServer':
+        this.step = 'createWallet';
+        break;
+      case 'newWalletSeed':
+        this.step = 'walletSeedCheck';
+        break;
+      case 'walletSeedCheck':
+        this.step = 'setPassword';
+        break;
+    }
+    this.prepareStep();
+    this.changeDetectorRef.detectChanges();
   }
 
   previous() : void {
-    console.log("Decreasing step from ", this.step);
-    this.step = this.step - 1;
-    console.log("Set step to", this.step);
+    switch(this.step) {
+      case 'conntype':
+        this.step = 'intro';
+        break;
+      case 'createWallet':
+        if(this.serverType == 'trusted')
+          this.step = 'pickServer';
+        else
+          this.step = 'conntype';
+        break;
+      case 'newWalletSeed':
+        this.step = 'createWallet';
+        break;
+      case 'walletSeedCheck':
+        this.step = 'newWalletSeed';
+        break;
+    }
+    this.prepareStep();
+    this.changeDetectorRef.detectChanges();
   }
 
   chooseTrustedServer() : void {
     this.settingsService.set('serverType', 'trusted', () => {
       console.log("Set server type. Now doing Next");
       this.serverType = 'trusted';
-      this.next();
+      this.step = 'pickServer';
+      this.prepareStep();
       this.changeDetectorRef.detectChanges();
     });
-
-
-
   }
 
   chooseStandalone() : void {
     this.settingsService.set('serverType', 'standalone', () => {
       this.settingsService.set('server', 'http://localhost:3001/', () => {
         this.serverType = 'standalone';
-        this.next();
+        this.step = 'createWallet';
+        this.prepareStep();
         this.changeDetectorRef.detectChanges();
       });
     });
+  }
 
+  prepareStep() : void {
 
+  }
+
+  verifySeedPhrase() : void {
+    if(this.checkPhrase !== this.recoverySeed) {
+      alert('Seed wrong. Try again.');
+    } else {
+      this.step = 'setPassword';
+
+    }
+  }
+
+  chooseNewWallet() : void {
+    if(this.recoverySeed == '') {
+      this.recoverySeed = this.walletService.generateNewHDKeyPair();
+    }
+    this.step = 'newWalletSeed';
+    this.prepareStep();
+    this.changeDetectorRef.detectChanges();
   }
 
   finish() : void {
