@@ -5,5 +5,4 @@ var ipcRenderer = require('electron').ipcRenderer;
 ipcRenderer.on('status-data', function (event, data) {
     document.getElementById('status').innerText = data.initStatus;
     document.getElementById('progress').innerText = data.initProgress;
-
 });
