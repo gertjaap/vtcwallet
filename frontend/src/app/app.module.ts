@@ -14,13 +14,16 @@ import { BreadcrumbsComponent } from './shared/breadcrumb.component';
 
 import { SyncStatusComponent } from './shared/syncstatus.component';
 import { BalanceComponent } from './shared/balance.component';
-
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import {HttpClientModule} from '@angular/common/http';
 // Routing Module
 import { AppRoutingModule } from './app.routing';
 
 // Layouts
 import { FullLayoutComponent } from './layouts/full-layout.component';
+
+import { VertcoinTranslationLoader } from './shared/translationloader';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   imports: [
@@ -29,7 +32,14 @@ import { FullLayoutComponent } from './layouts/full-layout.component';
     BsDropdownModule.forRoot(),
     TabsModule.forRoot(),
     ChartsModule,
-    HttpClientModule
+    HttpClientModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useClass: VertcoinTranslationLoader
+      }
+    }),
+    SharedModule.forRoot()
   ],
   declarations: [
     AppComponent,

@@ -43,9 +43,14 @@
 
 -->
 
-<body class="app aside-menu-fixed footer-fixed breadcrumb-fixed">
+<body class="app">
   <!-- Enable bootstrap 4 theme -->
   <script>window.__theme = 'bs4';</script>
+  <script>
+    var vtcRenderer = {};
+    vtcRenderer.electron = require('electron');
+    vtcRenderer.storage = require('electron-json-storage');
+  </script>
   <!-- App Loading... -->
 </body>
 

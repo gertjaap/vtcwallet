@@ -1,0 +1,12 @@
+<div *ngIf="!checkedInitialization" class="animated fadeIn">
+  Please wait...
+</div>
+<div *ngIf="checkedInitialization" class="animated fadeIn">
+  Onboarding {{ '_APP_TITLE_' | translate }}!
+  <button (click)="onboardingComplete()">Complete</button>
+</div>
+<footer>
+  <button class="btn btn-outline-secondary" [disabled]="noPrevious">Previous</button>
+  <button class="btn btn-outline-primary" [disabled]="noNext">Next</button>
+
+</footer>

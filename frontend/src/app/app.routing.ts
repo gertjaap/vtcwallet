@@ -7,7 +7,7 @@ import { FullLayoutComponent } from './layouts/full-layout.component';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: 'onboarding',
     pathMatch: 'full',
   },
   {
@@ -20,6 +20,10 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadChildren: './dashboard/dashboard.module#DashboardModule'
+      },
+      {
+        path: 'onboarding',
+        loadChildren: './onboarding/onboarding.module#OnboardingModule'
       },
     ]
   }
