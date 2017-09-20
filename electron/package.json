@@ -1,7 +1,7 @@
 {
-  "name": "electron-quick-start",
-  "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "name": "vtcwallet",
+  "version": "0.1.0",
+  "description": "Electron wrapper for VTC Wallet",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
@@ -9,18 +9,18 @@
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
     "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "Vertcoin",
+    "Wallet",
+    "Angular"
   ],
   "author": "GitHub",
-  "license": "CC0-1.0",
+  "license": "MIT",
   "devDependencies": {
     "electron": "~1.6.2",
     "electron-rebuild": "^1.6.0"
   },
   "dependencies": {
+    "electron-json-storage": "^3.1.0",
     "leveldown": "^1.7.2",
     "node-lmdb": "^0.4.13",
     "request": "^2.81.0"
