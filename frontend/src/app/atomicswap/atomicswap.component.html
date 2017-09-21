@@ -1,0 +1,37 @@
+<div class="animated fadeIn fullPage">
+  <div class="col-xs-12">
+    <div class="float-left">
+      <h1>{{ '_ATOMIC_SWAP_TITLE_' | translate }}</h1>
+    </div>
+    <div class="float-right">
+      <button class="btn btn-outline-primary">
+        <i class="icon-plus"></i> {{ '_ATOMIC_SWAP_NEW_' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div>
+    <table class="table table-bordered table-striped table-condensed">
+      <thead>
+        <tr>
+          <th>{{ '_ATOMIC_SWAP_TABLEHEADER_DATE_' | translate }}</th>
+          <th>{{ '_ATOMIC_SWAP_TABLEHEADER_PEER_' | translate }}</th>
+          <th>{{ '_ATOMIC_SWAP_TABLEHEADER_FOREIGNAMOUNT_' | translate }}</th>
+          <th>{{ '_ATOMIC_SWAP_TABLEHEADER_VTCAMOUNT_' | translate }}</th>
+          <th>{{ '_ATOMIC_SWAP_TABLEHEADER_RATE_' | translate }}</th>
+          <th>{{ '_ATOMIC_SWAP_TABLEHEADER_STATUS_' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let swap of swaps">
+          <td>{{swap.date | amDateFormat:'L' }}</td>
+          <td>{{swap.peer}}</td>
+          <td>{{swap.foreignAmount | numeralPipe:'0,0.0000' }} {{swap.foreignCurrency}}</td>
+          <td>{{swap.vtcAmount | numeralPipe:'0,0.0000' }} VTC</td>
+          <td>{{swap.rate | numeralPipe:'0,0.0000' }} VTC / {{swap.foreignCurrency}}</td>
+          <td>{{swap.status}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

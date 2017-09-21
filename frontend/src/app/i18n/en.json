@@ -1,5 +1,14 @@
 {
     "_APP_TITLE_": "Vertcoin Wallet",
+    "_MENU_GETTINGSTARTED_": "Getting started",
+    "_MENU_DASHBOARD_":"Dashboard",
+    "_MENU_BLOCKCHAIN_WALLET_":"Blockchain Wallet",
+    "_MENU_LIGHTNING_WALLET_" : "Lightning Wallet",
+    "_MENU_ATOMIC_SWAP_":"Atomic Swap",
+    "_MENU_MINE_":"Mine Vertcoins",
+    "_MENU_BUY_":"Buy Vertcoins",
+    "_MENU_COMMUNITY_":"Community",
+    "_MENU_DOCS_":"VertDocs",
     "_ONBOARDING_WELCOME_TITLE_" : "Let's set you up",
     "_ONBOARDING_WELCOME_BODY_" : "Welcome to the Vertcoin Wallet. In a few steps, we'll be setting your wallet up. Click Next to get started.",
     "_ONBOARDING_CHOOSE_CONNECTION_TITLE_" : "Choose your connection type",
@@ -27,7 +36,16 @@
     "_ONBOARDING_RECOVERY_SEED_INTRO_" : "This is your wallet's recovery seed. You can use these words to recover your wallet in case something happens to your computer. Write it down on a piece of paper and keep it safe.",
     "_ONBOARDING_VERIFY_RECOVERY_SEED_TITLE_" : "Verify Recovery seed",
     "_ONBOARDING_VERIFY_RECOVERY_SEED_INTRO_" : "To make sure you actually wrote down your recovery seed, please enter it again below and verify that you have written it down correctly.",
-    "_ONBOARDING_VERIFY_RECOVERY_SEED_VERIFY_" : "Verify"
+    "_ONBOARDING_VERIFY_RECOVERY_SEED_VERIFY_" : "Verify",
+    "_ATOMIC_SWAP_TITLE_" : "Atomic Swaps",
+    "_ATOMIC_SWAP_NEW_" : "New swap",
+    "_ATOMIC_SWAP_TABLEHEADER_DATE_" : "Date",
+    "_ATOMIC_SWAP_TABLEHEADER_PEER_" : "Peer",
+    "_ATOMIC_SWAP_TABLEHEADER_FOREIGNAMOUNT_" : "Foreign",
+    "_ATOMIC_SWAP_TABLEHEADER_VTCAMOUNT_" : "VTC Amount",
+    "_ATOMIC_SWAP_TABLEHEADER_RATE_" : "Rate",
+    "_ATOMIC_SWAP_TABLEHEADER_STATUS_" : "Status"
+
 
 
 

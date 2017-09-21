@@ -11,6 +11,20 @@ const routes: Routes = [
     data: {
       title: 'Onboarding'
     }
+  },
+  {
+    path: 'chooseConnection',
+    component: OnboardingComponent,
+    data: {
+      title: 'Onboarding'
+    }
+  },
+  {
+    path: 'selectServer',
+    component: OnboardingComponent,
+    data: {
+      title: 'Onboarding'
+    }
   }
 ];
 

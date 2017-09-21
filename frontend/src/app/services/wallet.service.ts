@@ -18,7 +18,7 @@ export class WalletService {
     return mnemonic;
   }
 
-
+  
 
 
 

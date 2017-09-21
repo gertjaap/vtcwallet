@@ -25,6 +25,22 @@ export const routes: Routes = [
         path: 'onboarding',
         loadChildren: './onboarding/onboarding.module#OnboardingModule'
       },
+      {
+        path: 'blockchainwallet',
+        loadChildren: './blockchainwallet/blockchainwallet.module#BlockchainWalletModule'
+      },
+      {
+        path: 'lightningwallet',
+        loadChildren: './lightningwallet/lightningwallet.module#LightningWalletModule'
+      },
+      {
+        path: 'atomicswap',
+        loadChildren: './atomicswap/atomicswap.module#AtomicSwapModule'
+      },
+      {
+        path: 'docs',
+        loadChildren: './vertdocs/vertdocs.module#VertDocsModule'
+      }
     ]
   }
 ];
