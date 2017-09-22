@@ -1,12 +1,11 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { SettingsService } from '../services/settings.service';
-import { WalletService } from '../services/wallet.service';
+import { SettingsService } from '../../services/settings.service';
 @Component({
   templateUrl: 'onboarding.component.html'
 })
 export class OnboardingComponent {
-  constructor(private walletService : WalletService, private changeDetectorRef : ChangeDetectorRef, private settingsService : SettingsService, private router : Router ) {
+  constructor(private changeDetectorRef : ChangeDetectorRef, private settingsService : SettingsService, private router : Router ) {
 
   }
 
@@ -23,6 +22,5 @@ export class OnboardingComponent {
       }
     });
   }
-
 
 }

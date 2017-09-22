@@ -9,6 +9,7 @@ import { OnboardingPickServerComponent } from './pickserver/pickserver.component
 import { OnboardingCreateWalletComponent } from './createwallet/createwallet.component';
 import { OnboardingNewWalletSeedComponent } from './newwalletseed/newwalletseed.component';
 import { OnboardingVerifyWalletSeedComponent } from './verifywalletseed/verifywalletseed.component';
+import { OnboardingSetWalletPasswordComponent } from './setwalletpassword/setwalletpassword.component';
 
 const routes: Routes = [
   {
@@ -59,7 +60,15 @@ const routes: Routes = [
     data: {
       title: 'Verify Wallet Seed'
     }
+  },
+  {
+    path: 'setwalletpassword',
+    component: OnboardingSetWalletPasswordComponent,
+    data: {
+      title: 'Set Wallet Password'
+    }
   }
+
 ];
 
 @NgModule({

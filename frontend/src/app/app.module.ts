@@ -23,7 +23,7 @@ import { AppRoutingModule } from './app.routing';
 import { FullLayoutComponent } from './layouts/full-layout.component';
 
 import { VertcoinTranslationLoader } from './shared/translationloader';
-import { SharedModule } from './shared/shared.module';
+import { SharedModule } from './modules/shared/shared.module';
 
 @NgModule({
   imports: [

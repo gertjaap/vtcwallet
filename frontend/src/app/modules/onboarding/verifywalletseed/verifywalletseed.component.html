@@ -4,11 +4,17 @@
   <div class="text-center">
     <input class="form-control" [(ngModel)]="checkPhrase" />
   </div>
+  <p>&nbsp;</p>
   <div class="text-center">
     <button class="btn btn-primary" (click)="verifySeedPhrase()">
       <i class="icon icon-check"></i> {{ '_ONBOARDING_VERIFY_RECOVERY_SEED_VERIFY_' | translate }}
     </button>
   </div>
+  <p>&nbsp;</p>
+  <div *ngIf="checkError" class="alert alert-danger" role="alert">
+    <i class="fa fa-close"></i> {{ '_ONBOARDING_VERIFY_RECOVERY_SEED_MISMATCH_' | translate }}
+  </div>
+  <p>&nbsp;</p>
   <div class="bottomLeftButtons">
     <button class="btn btn-outline-secondary" (click)="previous()">{{'_GENERIC_PREVIOUS_' | translate}}</button>
   </div>

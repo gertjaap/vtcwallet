@@ -1,7 +1,7 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { SettingsService } from '../../services/settings.service';
-import { WalletService } from '../../services/wallet.service';
+import { SettingsService } from '../../../services/settings.service';
+import { WalletService } from '../../../services/wallet.service';
 
 @Component({
   templateUrl: 'verifywalletseed.component.html'
@@ -9,7 +9,8 @@ import { WalletService } from '../../services/wallet.service';
 export class OnboardingVerifyWalletSeedComponent {
   serverType : string = '';
   checkPhrase : string = '';
-  checkSuccessful : boolean = false;
+
+  checkError : boolean = false;
   constructor(private walletService : WalletService,  private settingsService : SettingsService, private router : Router ) {
 
   }
@@ -18,11 +19,15 @@ export class OnboardingVerifyWalletSeedComponent {
     this.router.navigate(['onboarding/newwalletseed']);
   }
 
+  checkPhraseChange() : void {
+    this.checkError = false;
+  }
+
   verifySeedPhrase() : void {
     if(!this.walletService.checkAgainstLastGeneratedMnemonic(this.checkPhrase)) {
-      alert('Seed wrong. Try again.');
+      this.checkError = true;
     } else {
-      this.router.navigate(['onboarding/setpassword']);
+      this.router.navigate(['onboarding/setwalletpassword']);
     }
   }
 }

@@ -19,27 +19,27 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        loadChildren: './dashboard/dashboard.module#DashboardModule'
+        loadChildren: './modules/dashboard/dashboard.module#DashboardModule'
       },
       {
         path: 'onboarding',
-        loadChildren: './onboarding/onboarding.module#OnboardingModule'
+        loadChildren: './modules/onboarding/onboarding.module#OnboardingModule'
       },
       {
         path: 'blockchainwallet',
-        loadChildren: './blockchainwallet/blockchainwallet.module#BlockchainWalletModule'
+        loadChildren: './modules/blockchainwallet/blockchainwallet.module#BlockchainWalletModule'
       },
       {
         path: 'lightningwallet',
-        loadChildren: './lightningwallet/lightningwallet.module#LightningWalletModule'
+        loadChildren: './modules/lightningwallet/lightningwallet.module#LightningWalletModule'
       },
       {
         path: 'atomicswap',
-        loadChildren: './atomicswap/atomicswap.module#AtomicSwapModule'
+        loadChildren: './modules/atomicswap/atomicswap.module#AtomicSwapModule'
       },
       {
         path: 'docs',
-        loadChildren: './vertdocs/vertdocs.module#VertDocsModule'
+        loadChildren: './modules/vertdocs/vertdocs.module#VertDocsModule'
       }
     ]
   }

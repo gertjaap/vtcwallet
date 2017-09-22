@@ -4,7 +4,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormsModule }   from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-import { NumeralPipe } from './numeral.pipe';
+import { NumeralPipe } from '../../shared/numeral.pipe';
 import { MomentModule } from 'angular2-moment';
 
 @NgModule({

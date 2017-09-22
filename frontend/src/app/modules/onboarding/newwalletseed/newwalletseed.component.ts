@@ -1,7 +1,7 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { SettingsService } from '../../services/settings.service';
-import { WalletService } from '../../services/wallet.service';
+import { SettingsService } from '../../../services/settings.service';
+import { WalletService } from '../../../services/wallet.service';
 @Component({
   templateUrl: 'newwalletseed.component.html'
 })

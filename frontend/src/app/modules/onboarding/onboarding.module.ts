@@ -8,12 +8,14 @@ import { OnboardingPickServerComponent } from './pickserver/pickserver.component
 import { OnboardingCreateWalletComponent } from './createwallet/createwallet.component';
 import { OnboardingNewWalletSeedComponent } from './newwalletseed/newwalletseed.component';
 import { OnboardingVerifyWalletSeedComponent } from './verifywalletseed/verifywalletseed.component';
+import { OnboardingSetWalletPasswordComponent } from './setwalletpassword/setwalletpassword.component';
 
 import { OnboardingRoutingModule } from './onboarding-routing.module';
-import { SettingsService } from '../services/settings.service';
-import { WalletService } from '../services/wallet.service';
-import { StorageService } from '../services/storage.service';
+import { SettingsService } from '../../services/settings.service';
+import { WalletService } from '../../services/wallet.service';
+import { StorageService } from '../../services/storage.service';
 import { SharedModule } from '../shared/shared.module';
+import { EncryptionService } from '../../services/encryption.service';
 
 @NgModule({
   imports: [
@@ -28,8 +30,9 @@ import { SharedModule } from '../shared/shared.module';
     OnboardingPickServerComponent,
     OnboardingCreateWalletComponent,
     OnboardingNewWalletSeedComponent,
-    OnboardingVerifyWalletSeedComponent
+    OnboardingVerifyWalletSeedComponent,
+    OnboardingSetWalletPasswordComponent
   ],
-  providers: [SettingsService, StorageService, WalletService]
+  providers: [SettingsService, StorageService, WalletService, EncryptionService]
 })
 export class OnboardingModule { }
