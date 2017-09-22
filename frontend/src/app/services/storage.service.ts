@@ -1,9 +1,9 @@
-import {Injectable} from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
 declare var vtcRenderer: any;
 
 @Injectable()
 export class StorageService {
-  constructor() {
+  constructor(private ngZone : NgZone) {
     if(vtcRenderer.storage) {
       console.log("Using electron storage, path:", vtcRenderer.storage.getDataPath());
     } else {
@@ -14,8 +14,8 @@ export class StorageService {
 
   get(key : string, callback : (value : any) => void) {
     if(vtcRenderer.storage) {
-      vtcRenderer.storage.get(key, function(error, data) {
-        callback(data);
+      vtcRenderer.storage.get(key, (error, data) => {
+        this.ngZone.run(() => { callback(data); });
       });
     } else {
       callback(JSON.parse(localStorage.getItem(key)));
@@ -24,8 +24,8 @@ export class StorageService {
 
   set(key: string, value : any, callback : () => void) {
     if(vtcRenderer.storage) {
-      vtcRenderer.storage.set(key, value, function(error, data) {
-        callback();
+      vtcRenderer.storage.set(key, value, (error, data) => {
+        this.ngZone.run(() => { callback(); });
       });
     } else {
       localStorage.setItem(key, JSON.stringify(value));

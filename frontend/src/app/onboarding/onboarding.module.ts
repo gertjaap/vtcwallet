@@ -2,6 +2,13 @@ import { NgModule } from '@angular/core';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
 
 import { OnboardingComponent } from './onboarding.component';
+import { OnboardingIntroComponent } from './intro/intro.component';
+import { OnboardingConnectionTypeComponent } from './connectiontype/connectiontype.component';
+import { OnboardingPickServerComponent } from './pickserver/pickserver.component';
+import { OnboardingCreateWalletComponent } from './createwallet/createwallet.component';
+import { OnboardingNewWalletSeedComponent } from './newwalletseed/newwalletseed.component';
+import { OnboardingVerifyWalletSeedComponent } from './verifywalletseed/verifywalletseed.component';
+
 import { OnboardingRoutingModule } from './onboarding-routing.module';
 import { SettingsService } from '../services/settings.service';
 import { WalletService } from '../services/wallet.service';
@@ -14,7 +21,15 @@ import { SharedModule } from '../shared/shared.module';
     ChartsModule,
     SharedModule
   ],
-  declarations: [ OnboardingComponent ],
+  declarations: [
+    OnboardingComponent,
+    OnboardingIntroComponent,
+    OnboardingConnectionTypeComponent,
+    OnboardingPickServerComponent,
+    OnboardingCreateWalletComponent,
+    OnboardingNewWalletSeedComponent,
+    OnboardingVerifyWalletSeedComponent
+  ],
   providers: [SettingsService, StorageService, WalletService]
 })
 export class OnboardingModule { }

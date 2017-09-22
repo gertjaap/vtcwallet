@@ -3,6 +3,12 @@ import { Routes,
      RouterModule } from '@angular/router';
 
 import { OnboardingComponent } from './onboarding.component';
+import { OnboardingIntroComponent } from './intro/intro.component';
+import { OnboardingConnectionTypeComponent } from './connectiontype/connectiontype.component';
+import { OnboardingPickServerComponent } from './pickserver/pickserver.component';
+import { OnboardingCreateWalletComponent } from './createwallet/createwallet.component';
+import { OnboardingNewWalletSeedComponent } from './newwalletseed/newwalletseed.component';
+import { OnboardingVerifyWalletSeedComponent } from './verifywalletseed/verifywalletseed.component';
 
 const routes: Routes = [
   {
@@ -13,17 +19,45 @@ const routes: Routes = [
     }
   },
   {
-    path: 'chooseConnection',
-    component: OnboardingComponent,
+    path: 'intro',
+    component: OnboardingIntroComponent,
     data: {
-      title: 'Onboarding'
+      title: 'Intro'
     }
   },
   {
-    path: 'selectServer',
-    component: OnboardingComponent,
+    path: 'connectiontype',
+    component: OnboardingConnectionTypeComponent,
     data: {
-      title: 'Onboarding'
+      title: 'Connection Type'
+    }
+  },
+  {
+    path: 'pickserver',
+    component: OnboardingPickServerComponent,
+    data: {
+      title: 'Pick Server'
+    }
+  },
+  {
+    path: 'createwallet',
+    component: OnboardingCreateWalletComponent,
+    data: {
+      title: 'Create Wallet'
+    }
+  },
+  {
+    path: 'newwalletseed',
+    component: OnboardingNewWalletSeedComponent,
+    data: {
+      title: 'New Wallet Seed'
+    }
+  },
+  {
+    path: 'verifywalletseed',
+    component: OnboardingVerifyWalletSeedComponent,
+    data: {
+      title: 'Verify Wallet Seed'
     }
   }
 ];

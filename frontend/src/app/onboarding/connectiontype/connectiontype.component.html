@@ -1,0 +1,41 @@
+<div class="animated fadeIn fullPagePadding">
+  <div>
+    <h1>{{ '_ONBOARDING_CHOOSE_CONNECTION_TITLE_' | translate }}</h1>
+    <p>{{ '_ONBOARDING_CHOOSE_CONNECTION_INTRO_' | translate }}</p>
+    <div class="row">
+      <div class="col-md-6 col-xs-12">
+        <div class="card">
+          <div class="card-block">
+            <h2>{{ '_ONBOARDING_CHOOSE_CONNECTION_STANDALONE_TITLE_' | translate }}</h2>
+            <p>
+              <small>{{ '_ONBOARDING_CHOOSE_CONNECTION_STANDALONE_DESCRIPTION_' | translate }}</small>
+            </p>
+          </div>
+          <div class="card-footer text-center">
+            <button class="btn btn-outline-primary" (click)="chooseStandalone()">
+              <i class="icon icon-check"></i> {{ '_ONBOARDING_CHOOSE_CONNECTION_STANDALONE_CHOOSE_' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-xs-12">
+        <div class="card">
+          <div class="card-block">
+            <h2>{{ '_ONBOARDING_CHOOSE_CONNECTION_TRUSTED_SERVER_TITLE_' | translate }}</h2>
+            <p>
+              <small>{{ '_ONBOARDING_CHOOSE_CONNECTION_TRUSTED_SERVER_DESCRIPTION_' | translate }}</small>
+            </p>
+          </div>
+          <div class="card-footer text-center">
+            <button class="btn btn-outline-primary" (click)="chooseTrustedServer()">
+              <i class="icon icon-check"></i> {{ '_ONBOARDING_CHOOSE_CONNECTION_TRUSTED_SERVER_CHOOSE_' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bottomLeftButtons">
+    <button class="btn btn-outline-secondary" (click)="previous()">{{'_GENERIC_PREVIOUS_' | translate}}</button>
+  </div>
+</div>

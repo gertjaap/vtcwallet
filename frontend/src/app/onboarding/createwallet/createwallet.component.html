@@ -1,0 +1,39 @@
+<div class="animated fadeIn fullPagePadding">
+  <h1>{{ '_ONBOARDING_CREATE_WALLET_TITLE_' | translate }}</h1>
+  <p>{{ '_ONBOARDING_CREATE_WALLET_INTRO_' | translate }}</p>
+  <div class="row">
+    <div class="col-md-6 col-xs-12">
+      <div class="card">
+        <div class="card-block">
+          <h2>{{ '_ONBOARDING_CREATE_WALLET_CREATE_NEW_TITLE_' | translate }}</h2>
+          <p>
+            <small>{{ '_ONBOARDING_CREATE_WALLET_CREATE_NEW_DESCRIPTION_' | translate }}</small>
+          </p>
+        </div>
+        <div class="card-footer text-center">
+          <button class="btn btn-outline-primary" (click)="chooseNewWallet()">
+            <i class="icon icon-check"></i> {{ '_ONBOARDING_CREATE_WALLET_CREATE_NEW_CHOOSE_' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-xs-12">
+      <div class="card">
+        <div class="card-block">
+          <h2>{{ '_ONBOARDING_CREATE_WALLET_RESTORE_SEED_TITLE_' | translate }}</h2>
+          <p>
+            <small>{{ '_ONBOARDING_CREATE_WALLET_RESTORE_SEED_DESCRIPTION_' | translate }}</small>
+          </p>
+        </div>
+        <div class="card-footer text-center">
+          <button class="btn btn-outline-primary" (click)="chooseRecoverFromSeed()">
+            <i class="icon icon-check"></i> {{ '_ONBOARDING_CREATE_WALLET_RESTORE_SEED_CHOOSE_' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bottomLeftButtons">
+    <button class="btn btn-outline-secondary" (click)="previous()">{{'_GENERIC_PREVIOUS_' | translate}}</button>
+  </div>
+</div>

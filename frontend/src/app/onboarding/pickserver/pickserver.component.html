@@ -1,0 +1,28 @@
+<div class="animated fadeIn fullPagePadding">
+  <div>
+    <h1>{{ '_ONBOARDING_CHOOSE_SERVER_TITLE_' | translate }}</h1>
+    <p>{{ '_ONBOARDING_CHOOSE_SERVER_INTRO_' | translate }}</p>
+    <table class="table table-bordered table-striped table-condensed">
+      <thead>
+        <tr>
+          <th>&nbsp;</th>
+          <th>{{ '_ONBOARDING_CHOOSE_SERVER_NAME_' | translate }}</th>
+          <th>{{ '_ONBOARDING_CHOOSE_SERVER_LOCATION_' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let server of servers">
+          <td><input type="radio" name="server" [value]="server.name" [(ngModel)]="serverName" /></td>
+          <td>{{server.name}}</td>
+          <td>{{server.location}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="bottomLeftButtons">
+    <button class="btn btn-outline-secondary" (click)="previous()">{{'_GENERIC_PREVIOUS_' | translate}}</button>
+  </div>
+  <div class="bottomRightButtons">
+    <button class="btn btn-outline-primary" [disabled]="serverName == ''" (click)="next()">{{'_GENERIC_NEXT_' | translate}}</button>
+  </div>
+</div>

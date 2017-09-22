@@ -6,19 +6,23 @@ import {SettingsService} from './settings.service';
 
 @Injectable()
 export class WalletService {
+  private lastGeneratedMnemonic : string = '';
   constructor(private settingsService : SettingsService) {
 
   }
 
   generateNewHDKeyPair() : string {
     var randomBytes = crypto.randomBytes(16);
-    var mnemonic = bip39.entropyToMnemonic(randomBytes.toString('hex'));
+    this.lastGeneratedMnemonic = bip39.entropyToMnemonic(randomBytes.toString('hex'));
 
     //bip39.mnemonicToSeed(mnemonic);
-    return mnemonic;
+    return this.lastGeneratedMnemonic;
   }
 
-  
+  checkAgainstLastGeneratedMnemonic(checkPhrase : string) : boolean {
+    return (checkPhrase === this.lastGeneratedMnemonic);
+  }
+
 
 
 

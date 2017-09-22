@@ -1,0 +1,13 @@
+<div class="animated fadeIn fullPagePadding">
+  <h1>{{ '_ONBOARDING_RECOVERY_SEED_TITLE_' | translate }}</h1>
+  <p>{{ '_ONBOARDING_RECOVERY_SEED_INTRO_' | translate }}</p>
+  <div class="recoverySeed">
+    <pre>{{recoverySeed}}</pre>
+  </div>
+  <div class="bottomLeftButtons">
+    <button class="btn btn-outline-secondary" (click)="previous()">{{'_GENERIC_PREVIOUS_' | translate}}</button>
+  </div>
+  <div class="bottomRightButtons">
+    <button class="btn btn-outline-primary" (click)="next()">{{'_GENERIC_NEXT_' | translate}}</button>
+  </div>
+</div>

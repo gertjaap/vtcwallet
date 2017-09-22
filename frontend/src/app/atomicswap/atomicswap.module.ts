@@ -10,7 +10,7 @@ import { SharedModule } from '../shared/shared.module';
   imports: [
     AtomicSwapRoutingModule,
     ChartsModule,
-    SharedModule
+    SharedModule,
   ],
   declarations: [ AtomicSwapComponent ]
 })

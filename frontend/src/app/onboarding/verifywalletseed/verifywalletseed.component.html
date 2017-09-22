@@ -1,0 +1,15 @@
+<div class="animated fadeIn fullPagePadding">
+  <h1>{{ '_ONBOARDING_VERIFY_RECOVERY_SEED_TITLE_' | translate }}</h1>
+  <p>{{ '_ONBOARDING_VERIFY_RECOVERY_SEED_INTRO_' | translate }}</p>
+  <div class="text-center">
+    <input class="form-control" [(ngModel)]="checkPhrase" />
+  </div>
+  <div class="text-center">
+    <button class="btn btn-primary" (click)="verifySeedPhrase()">
+      <i class="icon icon-check"></i> {{ '_ONBOARDING_VERIFY_RECOVERY_SEED_VERIFY_' | translate }}
+    </button>
+  </div>
+  <div class="bottomLeftButtons">
+    <button class="btn btn-outline-secondary" (click)="previous()">{{'_GENERIC_PREVIOUS_' | translate}}</button>
+  </div>
+</div>
