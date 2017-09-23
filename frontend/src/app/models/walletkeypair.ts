@@ -9,4 +9,5 @@ export class WalletKeyPair {
     cipherText : string;
     iv : string;
     salt : string;
+    addressDescriptions : string[];
 }

@@ -1,3 +1,67 @@
-<p>
-  blockchainwallet works!
-</p>
+<div class="animated fadeIn fullPagePadding">
+  <h1>{{ '_BLOCKCHAIN_WALLET_TITLE_' | translate }}</h1>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          {{ '_BLOCKCHAIN_WALLET_BALANCE_' | translate }}
+        </div>
+        <div class="card-block">
+          <div class="balance"><span class="balanceFull">{{full | numeralPipe : '0,0'}}.</span><span class="balanceFractions">{{fractions | numeralPipe : '00000000' }}</span> VTC</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card clickableCard" (click)="send()">
+        <div class="card-block text-center">
+          <span class="largeIcon"><i class="fa fa-arrow-circle-o-up"></i></span>
+          <br/>
+          <b>{{ '_BLOCKCHAIN_WALLET_SEND_' | translate }}</b>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card clickableCard" (click)="receive()">
+        <div class="card-block text-center">
+          <span class="largeIcon"><i class="fa fa-arrow-circle-o-down"></i></span>
+          <br/>
+          <b>{{ '_BLOCKCHAIN_WALLET_RECEIVE_' | translate }}</b>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          {{ '_BLOCKCHAIN_WALLET_RECENT_TRANSACTIONS_' | translate }}
+        </div>
+        <div class="card-block">
+          <table class="table table-bordered table-striped table-condensed">
+            <thead>
+              <tr>
+                <th>&nbsp;</th>
+                <th>{{ '_BLOCKCHAIN_WALLET_TXTABLE_DATE_' | translate }}</th>
+                <th>{{ '_BLOCKCHAIN_WALLET_TXTABLE_ADDRESS_' | translate }}</th>
+                <th>{{ '_BLOCKCHAIN_WALLET_TXTABLE_AMOUNT_' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let tx of recentTransactions">
+                <td><i [ngClass]="{ 'fa' : true, 'fa-arrow-circle-o-down' : tx.received, 'fa-arrow-circle-o-up' : !tx.received}"></i></td>
+                <td>{{tx.date}}</td>
+                <td>{{tx.address}}</td>
+                <td><span *ngIf="tx.received">+</span><span *ngIf="!tx.received">-</span>{{tx.value | numeralPipe:'0,0.00000000' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer">
+          <a class="float-right" [routerLink]="['transactionhistory']">
+            {{ '_BLOCKCHAIN_WALLET_VIEW_ALL_' | translate }}
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>

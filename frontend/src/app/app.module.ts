@@ -25,6 +25,13 @@ import { FullLayoutComponent } from './layouts/full-layout.component';
 import { VertcoinTranslationLoader } from './shared/translationloader';
 import { SharedModule } from './modules/shared/shared.module';
 
+import { SettingsService } from './services/settings.service';
+import { WalletService } from './services/wallet.service';
+import { StorageService } from './services/storage.service';
+import { BlockchainService } from './services/blockchain.service';
+import { MiddlewareClientService } from './services/middlewareclient.service';
+
+
 @NgModule({
   imports: [
     BrowserModule,
@@ -54,7 +61,7 @@ import { SharedModule } from './modules/shared/shared.module';
   providers: [{
     provide: LocationStrategy,
     useClass: HashLocationStrategy
-  }],
+  }, BlockchainService, WalletService, SettingsService, StorageService, MiddlewareClientService],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

@@ -55,8 +55,15 @@
     "_ONBOARDING_LASTFEWTHINGS_MINE_DESCRIPTION_" : "If you have a decent graphical processor (GPU), like is often found in high end gaming systems, you can try mining our network. Mining is rewarded with Vertcoin, and you help secure the blockchain. Click the 'Mine Vertcoin' button on the left to get started.",
     "_ONBOARDING_LASTFEWTHINGS_FURTHERHELP_TITLE_" : "Further help",
     "_ONBOARDING_LASTFEWTHINGS_FURTHERHELP_DESCRIPTION_" : "If you need any further help, feel free to browse our documentation page 'VertDocs', or get help from our community. You can find how to get in touch with your fellow Vertans via 'Community' in the menu on the left.",
-
-
+    "_BLOCKCHAIN_WALLET_TITLE_" : "Blockchain Wallet",
+    "_BLOCKCHAIN_WALLET_BALANCE_" : "Balance",
+    "_BLOCKCHAIN_WALLET_SEND_" : "Send",
+    "_BLOCKCHAIN_WALLET_RECEIVE_" : "Receive",
+    "_BLOCKCHAIN_WALLET_RECENT_TRANSACTIONS_" : "Recent transactions",
+    "_BLOCKCHAIN_WALLET_VIEW_ALL_" : "View all",
+    "_BLOCKCHAIN_WALLET_TXTABLE_DATE_" : "Date",
+    "_BLOCKCHAIN_WALLET_TXTABLE_ADDRESS_" : "Address",
+    "_BLOCKCHAIN_WALLET_TXTABLE_AMOUNT_" : "Amount",
     "_ATOMIC_SWAP_TITLE_" : "Atomic Swaps",
     "_ATOMIC_SWAP_NEW_" : "New swap",
     "_ATOMIC_SWAP_TABLEHEADER_DATE_" : "Date",

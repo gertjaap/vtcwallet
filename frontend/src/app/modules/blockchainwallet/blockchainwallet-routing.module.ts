@@ -3,6 +3,9 @@ import { Routes,
      RouterModule } from '@angular/router';
 
 import { BlockchainWalletComponent } from './blockchainwallet.component';
+import { BlockchainWalletSendComponent } from './send/send.component';
+import { BlockchainWalletReceiveComponent } from './receive/receive.component';
+import { BlockchainWalletTransactionHistoryComponent } from './transactionhistory/transactionhistory.component';
 
 const routes: Routes = [
   {
@@ -10,6 +13,24 @@ const routes: Routes = [
     component: BlockchainWalletComponent,
     data: {
       title: 'Blockchain Wallet'
+    }
+  },{
+    path: 'send',
+    component: BlockchainWalletSendComponent,
+    data: {
+      title: 'Send'
+    }
+  },{
+    path: 'receive',
+    component: BlockchainWalletReceiveComponent,
+    data: {
+      title: 'Receive'
+    }
+  },{
+    path:'transactionhistory',
+    component : BlockchainWalletTransactionHistoryComponent,
+    data : {
+      title : 'Transaction History'
     }
   }
 ];
