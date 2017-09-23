@@ -115,7 +115,11 @@ router.get('/xpubTxos/:xpub', function(req, res, next) {
   var expandTxoLocal = function(txo, callback) {
     expandTxo(txo, function(txoObject) {
       if(txoObject)
+      {
+        txoObject.address = txo.address;
         expandedTxos.push(txoObject);
+      }
+
 
       callback();
     });
