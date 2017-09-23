@@ -1,6 +1,7 @@
 {
   "_GENERIC_NEXT_" : "Next",
   "_GENERIC_PREVIOUS_" : "Previous",
+  "_GENERIC_FINISH_" : "Finish",
     "_APP_TITLE_": "Vertcoin Wallet",
     "_MENU_GETTINGSTARTED_": "Getting started",
     "_MENU_DASHBOARD_":"Dashboard",
@@ -46,6 +47,16 @@
     "_ONBOARDING_SET_PASSWORD_VERIFY_" : "Type your password again here",
     "_ONBOARDING_SET_PASSWORD_MISMATCH_" : "The passwords entered don't match",
     "_ONBOARDING_SET_PASSWORD_EMPTY_" : "You're not allowed to use an empty password.",
+    "_ONBOARDING_LASTFEWTHINGS_TITLE_" : "You're all set up!",
+    "_ONBOARDING_LASTFEWTHINGS_INTRO_" : "A few last things to help you get started:",
+    "_ONBOARDING_LASTFEWTHINGS_BUY_TITLE_" : "Buy Vertcoin",
+    "_ONBOARDING_LASTFEWTHINGS_BUY_DESCRIPTION_" : "If you don't have any Vertcoin and would like to buy some, pick 'Buy Vertcoin' from the menu on the left.",
+    "_ONBOARDING_LASTFEWTHINGS_MINE_TITLE_" : "Mine Vertcoin",
+    "_ONBOARDING_LASTFEWTHINGS_MINE_DESCRIPTION_" : "If you have a decent graphical processor (GPU), like is often found in high end gaming systems, you can try mining our network. Mining is rewarded with Vertcoin, and you help secure the blockchain. Click the 'Mine Vertcoin' button on the left to get started.",
+    "_ONBOARDING_LASTFEWTHINGS_FURTHERHELP_TITLE_" : "Further help",
+    "_ONBOARDING_LASTFEWTHINGS_FURTHERHELP_DESCRIPTION_" : "If you need any further help, feel free to browse our documentation page 'VertDocs', or get help from our community. You can find how to get in touch with your fellow Vertans via 'Community' in the menu on the left.",
+
+
     "_ATOMIC_SWAP_TITLE_" : "Atomic Swaps",
     "_ATOMIC_SWAP_NEW_" : "New swap",
     "_ATOMIC_SWAP_TABLEHEADER_DATE_" : "Date",

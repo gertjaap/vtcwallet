@@ -9,13 +9,13 @@ import { OnboardingCreateWalletComponent } from './createwallet/createwallet.com
 import { OnboardingNewWalletSeedComponent } from './newwalletseed/newwalletseed.component';
 import { OnboardingVerifyWalletSeedComponent } from './verifywalletseed/verifywalletseed.component';
 import { OnboardingSetWalletPasswordComponent } from './setwalletpassword/setwalletpassword.component';
+import { OnboardingLastFewThingsComponent } from './lastfewthings/lastfewthings.component';
 
 import { OnboardingRoutingModule } from './onboarding-routing.module';
 import { SettingsService } from '../../services/settings.service';
 import { WalletService } from '../../services/wallet.service';
 import { StorageService } from '../../services/storage.service';
 import { SharedModule } from '../shared/shared.module';
-import { EncryptionService } from '../../services/encryption.service';
 
 @NgModule({
   imports: [
@@ -31,8 +31,9 @@ import { EncryptionService } from '../../services/encryption.service';
     OnboardingCreateWalletComponent,
     OnboardingNewWalletSeedComponent,
     OnboardingVerifyWalletSeedComponent,
-    OnboardingSetWalletPasswordComponent
+    OnboardingSetWalletPasswordComponent,
+    OnboardingLastFewThingsComponent
   ],
-  providers: [SettingsService, StorageService, WalletService, EncryptionService]
+  providers: [SettingsService, StorageService, WalletService]
 })
 export class OnboardingModule { }

@@ -11,7 +11,7 @@ export class OnboardingSetWalletPasswordComponent {
   verifyPassword : string = '';
   showEmptyPasswordNotice : boolean = false;
   showPasswordsDontMatchNotice : boolean = false;
-
+  busy : boolean = false;
   constructor(private walletService : WalletService,  private settingsService : SettingsService, private router : Router ) {
 
   }
@@ -31,8 +31,10 @@ export class OnboardingSetWalletPasswordComponent {
     }
     else
     {
+      this.busy = true;
       this.walletService.encryptNewWallet(this.password, () => {
-        this.router.navigate(['dashboard']);
+        this.busy = false;
+        this.router.navigate(['onboarding/lastfewthings']);
       });
     }
   }

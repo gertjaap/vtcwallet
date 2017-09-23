@@ -22,6 +22,16 @@ export class StorageService {
     }
   }
 
+  has(key : string, callback : (exists : boolean) => void) {
+    if(vtcRenderer.storage) {
+      vtcRenderer.storage.has(key, (error, hasKey) => {
+        this.ngZone.run(() => { callback(hasKey); });
+      });
+    } else {
+      callback(localStorage.hasItem(key));
+    }
+  }
+
   set(key: string, value : any, callback : () => void) {
     if(vtcRenderer.storage) {
       vtcRenderer.storage.set(key, value, (error, data) => {

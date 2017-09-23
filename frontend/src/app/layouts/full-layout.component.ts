@@ -7,7 +7,6 @@ import { Component, OnInit } from '@angular/core';
 export class FullLayoutComponent implements OnInit {
   private menuItems: { titleString : string, icon : string, link : string }[] =
   [
-    { titleString : '_MENU_GETTINGSTARTED_', icon: 'icon-check', link : '/onboarding' },
     { titleString : '_MENU_DASHBOARD_', icon: 'fa fa-dashboard', link : '/dashboard' },
     { titleString : '_MENU_BLOCKCHAIN_WALLET_', icon: 'icon-wallet', link : '/blockchainwallet' },
     { titleString : '_MENU_LIGHTNING_WALLET_', icon: 'fa fa-bolt', link : '/lightningwallet' },

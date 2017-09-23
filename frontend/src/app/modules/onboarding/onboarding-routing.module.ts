@@ -10,6 +10,7 @@ import { OnboardingCreateWalletComponent } from './createwallet/createwallet.com
 import { OnboardingNewWalletSeedComponent } from './newwalletseed/newwalletseed.component';
 import { OnboardingVerifyWalletSeedComponent } from './verifywalletseed/verifywalletseed.component';
 import { OnboardingSetWalletPasswordComponent } from './setwalletpassword/setwalletpassword.component';
+import { OnboardingLastFewThingsComponent } from './lastfewthings/lastfewthings.component';
 
 const routes: Routes = [
   {
@@ -66,6 +67,13 @@ const routes: Routes = [
     component: OnboardingSetWalletPasswordComponent,
     data: {
       title: 'Set Wallet Password'
+    }
+  },
+  {
+    path: 'lastfewthings',
+    component: OnboardingLastFewThingsComponent,
+    data: {
+      title: 'Last Few Things'
     }
   }
 

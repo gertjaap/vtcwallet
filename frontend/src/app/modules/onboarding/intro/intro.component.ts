@@ -11,6 +11,8 @@ export class OnboardingIntroComponent {
   }
 
   next() : void {
-    this.router.navigate(['onboarding/connectiontype']);
+    this.settingsService.set('introDone', true, () => {
+      this.router.navigate(['onboarding/connectiontype']);
+    });
   }
 }

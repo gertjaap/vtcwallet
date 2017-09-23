@@ -15,4 +15,8 @@ export class SettingsService {
   set(key: string, value : any, callback : () => void) {
     this.storageService.set("setting_" + key, value, callback);
   }
+
+  has(key : string, callback : (exists : boolean) => void) {
+    this.storageService.has("setting_" + key, callback);
+  }
 }

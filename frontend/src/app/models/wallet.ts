@@ -1,5 +1,8 @@
 import { WalletKeyPair } from './walletkeypair';
 
 export class Wallet {
-    keys : WalletKeyPair[];
+  checkPhraseCipherText : string;
+  checkPhraseIv : string;
+  checkPhraseSalt : string;
+  keys : WalletKeyPair[];
 }
